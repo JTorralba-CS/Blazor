@@ -1,0 +1,8 @@
+﻿@page "/"
+@namespace BLAZOR.Server.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_Layout";
+}
+
+<component type="typeof(BLAZOR.WASM.Client.App)" render-mode="Server" />
