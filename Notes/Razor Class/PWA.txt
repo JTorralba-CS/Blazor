@@ -1,0 +1,46 @@
+create PWA (Blazor web assembly progressive web app) project
+
+create UI (Razor class library) project
+
+
+UI ----------
+
+purge all boiler plate assets except Dependencies & wwwroot folder container
+
+add framework/package:
+
+<ItemGroup>
+  <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.2" />
+  <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.2" PrivateAssets="all" />
+</ItemGroup>
+
+
+PWA.Client ----------
+
+add project reference to UI
+
+move all wwwroot assets to UI project except wwwroot\index.html
+move *.razor (including Pages/Shared folder containers) to UI project
+
+settings:
+ServiceWorker Include="wwwroot\service-worker.js" --> ServiceWorker Include="..\..\UI\wwwroot\service-worker.js"
+
+Program.cs:
+using PWA.Client --> using UI
+
+wwwroot\index.html:
+href="css/bootstrap/bootstrap.min.css" --> href="_content/UI/css/bootstrap/bootstrap.min.css"
+href="css/app.css" --> href="_content/UI/css/app.css"
+href="favicon.png" --> href="_content/UI/favicon.png"
+href="manifest.json" -->href="_content/UI/manifest.json"
+href="icon-512.png" --> href="_content/UI/icon-512.png"
+href="icon-192.png" --> href="_content/UI/icon-192.png"
+
+
+UI ----------
+
+add project reference to PWA.Shared
+
+_imports.razor:
+@using PWA.Client --> @using UI
+@using PWA.Client.Shared --> @using UI.Shared
