@@ -1,0 +1,49 @@
+create MAUI (Blazor web assembly app) project
+
+create UI (Razor class library) project
+
+
+UI ----------
+
+purge all boiler plate assets except Dependencies & wwwroot folder container
+
+add framework/package:
+
+<ItemGroup>
+  <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.2" />
+  <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.2" PrivateAssets="all" />
+</ItemGroup>
+
+
+MAUI ----------
+
+add project reference to UI project
+
+move all wwwroot assets to UI project except wwwroot\index.html
+move *.razor (including Data/Pages/Shared folder containers) to UI project
+
+MauiProgram.cs:
+using MAUI.Data --> using UI.Data
+
+MainPage.xaml:
+xmlns:local="clr-namespace:MAUI" --> xmlns:local="clr-namespace:UI;assembly=UI"
+
+wwwroot\index.html:
+href="css/bootstrap/bootstrap.min.css" --> href="_content/UI/css/bootstrap/bootstrap.min.css"
+href="css/app.css" --> href="_content/UI/css/app.css"
+
+
+UI ----------
+
+_imports.razor:
+@using MAUI --> @using UI
+@using MAUI.Shared --> @using UI.Shared
+
+Data\WeatherForcast.cs:
+namespace MAUI.Data --> namespace UI.Data
+
+Data\WeatherForcastService.cs:
+namespace MAUI.Data --> namespace UI.Data
+
+Pages\FetchData.razor:
+@using MAUI.Data --> @using UI.Data
