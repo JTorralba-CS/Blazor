@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\BLAZOR.WASM.Server.props" />
+</Project>

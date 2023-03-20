@@ -1,4 +1,4 @@
-create WASM (Blazor web assembly app) project
+create WASM (Blazor web assembly non-HTTPS/non-HOSTED/non-PROGRESSIVE app) project
 
 create UI (Razor class library) project
 

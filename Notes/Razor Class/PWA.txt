@@ -1,4 +1,4 @@
-create PWA (Blazor web assembly progressive web app) project
+create PWA (Blazor web assembly HTTPS/HOSTED/PROGRESSIVE app) project
 
 create UI (Razor class library) project
 
@@ -17,7 +17,7 @@ add framework/package:
 
 PWA.Client ----------
 
-add project reference to UI
+add project reference to UI project
 
 move all wwwroot assets to UI project except wwwroot\index.html
 move *.razor (including Pages/Shared folder containers) to UI project
