@@ -22,9 +22,6 @@ add project reference to UI project
 move all wwwroot assets to UI project except wwwroot\index.html
 move *.razor (including Pages/Shared folder containers) to UI project
 
-settings:
-ServiceWorker Include="wwwroot\service-worker.js" --> ServiceWorker Include="..\..\UI\wwwroot\service-worker.js"
-
 Program.cs:
 using PWA.Client --> using UI
 
@@ -32,9 +29,12 @@ wwwroot\index.html:
 href="css/bootstrap/bootstrap.min.css" --> href="_content/UI/css/bootstrap/bootstrap.min.css"
 href="css/app.css" --> href="_content/UI/css/app.css"
 href="favicon.png" --> href="_content/UI/favicon.png"
-href="manifest.json" -->href="_content/UI/manifest.json"
-href="icon-512.png" --> href="_content/UI/icon-512.png"
 href="icon-192.png" --> href="_content/UI/icon-192.png"
+href="icon-512.png" --> href="_content/UI/icon-512.png"
+href="manifest.json" --> href="_content/UI/manifest.json"
+
+settings:
+Include="wwwroot\service-worker.js" --> Include="..\..\UI\wwwroot\service-worker.js"
 
 
 UI ----------
