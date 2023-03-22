@@ -37,24 +37,24 @@ namespace Server.Data --> UI.Data
 
 UI ----------
 
-_Imports.razor:
-remove @using Server
-@using Server.Shared --> @using UI.Shared
-
-Pages\Error.cshmtl\Error.cshtml.cs:
-add using Microsoft.Extensions.Logging;
-Server.Pages --> UI.Pages
+Pages\_Host.cshtml:
+@namespace Server.Pages --> @namespace UI.Pages
+href="css/bootstrap/bootstrap.min.css" --> href="_content/UI/css/bootstrap/bootstrap.min.css"
+href="css/site.css" --> href="_content/UI/css/site.css"
+href="favicon.png" --> href="_content/UI/favicon.png"
 
 Pages\Error.cshmtl
 Server.Pages.ErrorModel --> UI.Pages.ErrorModel
 href="~/css/bootstrap/bootstrap.min.css" --> href="_content/UI/css/bootstrap/bootstrap.min.css"
 href="~/css/site.css" --> href="_content/UI/css/site.css"
 
-Pages\_Host.cshtml:
-@namespace Server.Pages --> @namespace UI.Pages
-href="css/bootstrap/bootstrap.min.css" --> href="_content/UI/css/bootstrap/bootstrap.min.css"
-href="css/site.css" --> href="_content/UI/css/site.css"
-href="favicon.png" --> href="_content/UI/favicon.png"
+Pages\Error.cshmtl\Error.cshtml.cs:
+add using Microsoft.Extensions.Logging;
+Server.Pages --> UI.Pages
+
+_Imports.razor:
+remove @using Server
+@using Server.Shared --> @using UI.Shared
 
 Pages\FetchData.razor:
 @using Server.Data --> UI.Data

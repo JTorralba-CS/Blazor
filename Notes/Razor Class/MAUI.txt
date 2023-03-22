@@ -20,17 +20,17 @@ MAUI ----------
 add project reference to UI project
 
 move all wwwroot assets to UI project except wwwroot\index.html
-move *.razor (including Data/Pages/Shared folder containers) to UI project
+move *.razor (including Pages/Shared/Data folder containers) to UI project
 
 MauiProgram.cs:
 using MAUI.Data --> using UI.Data
 
-MainPage.xaml:
-xmlns:local="clr-namespace:MAUI" --> xmlns:local="clr-namespace:UI;assembly=UI"
-
 wwwroot\index.html:
 href="css/bootstrap/bootstrap.min.css" --> href="_content/UI/css/bootstrap/bootstrap.min.css"
 href="css/app.css" --> href="_content/UI/css/app.css"
+
+MainPage.xaml:
+xmlns:local="clr-namespace:MAUI" --> xmlns:local="clr-namespace:UI;assembly=UI"
 
 
 UI ----------
@@ -39,11 +39,11 @@ _imports.razor:
 @using MAUI --> @using UI
 @using MAUI.Shared --> @using UI.Shared
 
+Pages\FetchData.razor:
+@using MAUI.Data --> @using UI.Data
+
 Data\WeatherForcast.cs:
 namespace MAUI.Data --> namespace UI.Data
 
 Data\WeatherForcastService.cs:
 namespace MAUI.Data --> namespace UI.Data
-
-Pages\FetchData.razor:
-@using MAUI.Data --> @using UI.Data
