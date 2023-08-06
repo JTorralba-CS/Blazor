@@ -1,14 +1,13 @@
-﻿@page "/fetchdata"
-@using BLAZOR.WASM.Shared
-@inject HttpClient Http
-
-@inject UniformResourceLocator URL
+﻿@page "/fetchdata2"
 
 <PageTitle>Weather</PageTitle>
 
+@using BLAZOR.WASM.Shared
+@inject WeatherForecastService ForecastService
+
 <h1></h1>
 
-<p>This component demonstrates fetching data from the server.</p>
+<p>This component demonstrates fetching data from the service.</p>
 
 @if (forecasts == null)
 {
@@ -44,6 +43,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>(URL.Domain + "WeatherForecast");
+        forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
     }
 }

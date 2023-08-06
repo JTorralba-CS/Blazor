@@ -8,6 +8,7 @@ builder.Services.AddServerSideBlazor();
 
 builder.Services.AddScoped<System.Net.Http.HttpClient>();
 builder.Services.AddSingleton<UniformResourceLocator>();
+builder.Services.AddSingleton<WeatherForecastService>();
 
 var app = builder.Build();
 
