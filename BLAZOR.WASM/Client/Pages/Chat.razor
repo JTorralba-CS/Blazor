@@ -36,43 +36,44 @@
 </ul>
 
 @code {
-    private HubConnection? hubConnection;
-    private List<String> Messages = new();
+    private HubConnection? _HubConnection;
+
     private String? User;
+
     private String? Message;
+    private List<String> Messages = new();
 
     protected override async Task OnInitializedAsync()
     {
-        hubConnection = new HubConnectionBuilder()
+        _HubConnection = new HubConnectionBuilder()
             .WithUrl(URL.Domain + "chathub")
             .WithAutomaticReconnect()
             .Build();
 
-        hubConnection.On<String, String>("RX", (User, Message) =>
+        _HubConnection.On<String, String>("RX", (User, Message) =>
         {
-            var FormattedMessage = $"{User}: {Message}";
-            Messages.Add(FormattedMessage);
+            Messages.Add($"{User}: {Message}");
             InvokeAsync(StateHasChanged);
         });
 
-        await hubConnection.StartAsync();
+        await _HubConnection.StartAsync();
     }
+
+    public bool IsConnected => _HubConnection?.State == HubConnectionState.Connected;
 
     private async Task Send()
     {
-        if (hubConnection is not null)
+        if (_HubConnection is not null)
         {
-            await hubConnection.SendAsync("TX", User, Message);
+            await _HubConnection.SendAsync("TX", User, Message);
         }
     }
 
-    public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
-
-    public async ValueTask DisposeAsync()
+        public async ValueTask DisposeAsync()
     {
-        if (hubConnection is not null)
+        if (_HubConnection is not null)
         {
-            await hubConnection.DisposeAsync();
+            await _HubConnection.DisposeAsync();
         }
     }
 };
