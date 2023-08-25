@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.10" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\BLAZOR.WASM\Client\BLAZOR.WASM.Client.csproj" />
     <ProjectReference Include="..\BLAZOR.WASM\Shared\BLAZOR.WASM.Shared.csproj" />
   </ItemGroup>

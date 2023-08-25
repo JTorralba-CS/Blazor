@@ -1,0 +1,78 @@
+﻿@page "/chat"
+
+@using BLAZOR.WASM.Shared
+@inject UniformResourceLocator URL
+
+@using Microsoft.AspNetCore.SignalR.Client
+@implements IAsyncDisposable
+
+<PageTitle>Chat</PageTitle>
+
+<div class="form-group">
+    <label>
+        User: <input @bind="User" />
+    </label>
+</div>
+
+<br/>
+
+<div class="form-group">
+    <label>
+        Message: <input @bind="Message" />
+    </label>
+</div>
+
+<br />
+
+<button @onclick="Send" disabled="@(IsConnected==false)">Send</button>
+
+<hr/>
+
+<ul>
+    @foreach (string Message in Messages)
+    {
+        <li>@Message</li>
+    }
+</ul>
+
+@code {
+    private HubConnection? hubConnection;
+    private List<string> Messages = new();
+    private string? User;
+    private string? Message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(URL.Domain + "chathub")
+            .WithAutomaticReconnect()
+            .Build();
+
+        hubConnection.On<string, string>("RX", (User, Message) =>
+        {
+            var FormattedMessage = $"{User}: {Message}";
+            Messages.Add(FormattedMessage);
+            InvokeAsync(StateHasChanged);
+        });
+
+        await hubConnection.StartAsync();
+    }
+
+    private async Task Send()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.SendAsync("TX", User, Message);
+        }
+    }
+
+    public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+};
