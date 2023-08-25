@@ -29,7 +29,7 @@
 <hr/>
 
 <ul>
-    @foreach (string Message in Messages)
+    @foreach (String Message in Messages)
     {
         <li>@Message</li>
     }
@@ -37,9 +37,9 @@
 
 @code {
     private HubConnection? hubConnection;
-    private List<string> Messages = new();
-    private string? User;
-    private string? Message;
+    private List<String> Messages = new();
+    private String? User;
+    private String? Message;
 
     protected override async Task OnInitializedAsync()
     {
@@ -48,7 +48,7 @@
             .WithAutomaticReconnect()
             .Build();
 
-        hubConnection.On<string, string>("RX", (User, Message) =>
+        hubConnection.On<String, String>("RX", (User, Message) =>
         {
             var FormattedMessage = $"{User}: {Message}";
             Messages.Add(FormattedMessage);
