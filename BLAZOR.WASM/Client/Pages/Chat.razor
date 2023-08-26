@@ -6,6 +6,8 @@
 @using Microsoft.AspNetCore.SignalR.Client
 @implements IAsyncDisposable
 
+@inject WeatherForecastService WeatherForecast
+
 <PageTitle>Chat</PageTitle>
 
 <div class="form-group">
@@ -43,6 +45,8 @@
     private String? Message;
     private List<String> Messages = new();
 
+    private WeatherForecast[]? Forecasts;
+
     protected override async Task OnInitializedAsync()
     {
         _HubConnection = new HubConnectionBuilder()
@@ -52,8 +56,15 @@
 
         _HubConnection.On<String, String>("RX", (User, Message) =>
         {
-            Messages.Add($"{User}: {Message}");
-            InvokeAsync(StateHasChanged);
+            if (Message.ToUpper().Trim() == "`")
+            {
+                CallMessageX(User);
+            }
+            else
+            {
+                Messages.Add($"{User}: {Message}");
+                InvokeAsync(StateHasChanged);
+            }
         });
 
         await _HubConnection.StartAsync();
@@ -75,5 +86,28 @@
         {
             await _HubConnection.DisposeAsync();
         }
+    }
+
+    private async void CallMessageX(String User)
+    {
+        String Message;
+        Message = await TaskMessageX();
+        
+        Messages.Add($"{User}: {Message}");
+        InvokeAsync(StateHasChanged);
+    }
+
+    protected async Task<String> TaskMessageX()
+    {
+        String Message = "";
+
+        Forecasts = await WeatherForecast.GetForecastAsync(DateTime.Now);
+
+        foreach (var Forcast in Forecasts)
+        {
+            Message = String.Concat(Message, " ", Forcast.Date.ToString().Trim());
+        }
+
+        return Message;
     }
 };
