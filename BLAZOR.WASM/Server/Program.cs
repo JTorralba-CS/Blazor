@@ -1,5 +1,6 @@
-using Microsoft.AspNetCore.ResponseCompression;
 using BLAZOR.WASM.Server.Hubs;
+using BLAZOR.WASM.Shared;
+using Microsoft.AspNetCore.ResponseCompression;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,8 @@ builder.Services.AddResponseCompression(opts =>
     opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
         new[] { "application/octest-stream" });
 });
+
+builder.Services.AddSingleton<WeatherForecastService>();
 
 var app = builder.Build();
 
