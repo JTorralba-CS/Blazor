@@ -1,6 +1,8 @@
 using BLAZOR.WASM.Server.Hubs;
+using BLAZOR.WASM.Server.Workers;
 using BLAZOR.WASM.Shared;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,7 +10,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
-builder.Services.AddSignalR();
+
+builder.Services.AddSignalR(HubOptions =>
+{
+    HubOptions.EnableDetailedErrors = true;
+});
 
 builder.Services.AddResponseCompression(opts =>
 {
@@ -17,6 +23,7 @@ builder.Services.AddResponseCompression(opts =>
 });
 
 builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddHostedService<PulseWorker>();
 
 var app = builder.Build();
 

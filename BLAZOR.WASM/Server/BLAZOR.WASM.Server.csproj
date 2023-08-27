@@ -15,5 +15,9 @@
     <ProjectReference Include="..\Shared\BLAZOR.WASM.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Workers\" />
+  </ItemGroup>
+
 
 </Project>
