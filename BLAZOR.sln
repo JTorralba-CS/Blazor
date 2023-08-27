@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BLAZOR.WASM.Client", "BLAZO
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BLAZOR.WASM.Shared", "BLAZOR.WASM\Shared\BLAZOR.WASM.Shared.csproj", "{27976102-C4F8-47CB-832F-C306EF31FD00}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPF .NET Framework", "WPF .NET Framework\WPF .NET Framework.csproj", "{8ACDA97C-801A-401E-83D9-9E36E470863C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{27976102-C4F8-47CB-832F-C306EF31FD00}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27976102-C4F8-47CB-832F-C306EF31FD00}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{27976102-C4F8-47CB-832F-C306EF31FD00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8ACDA97C-801A-401E-83D9-9E36E470863C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8ACDA97C-801A-401E-83D9-9E36E470863C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8ACDA97C-801A-401E-83D9-9E36E470863C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8ACDA97C-801A-401E-83D9-9E36E470863C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
