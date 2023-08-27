@@ -1,11 +1,8 @@
-﻿using System.Windows;
-using Microsoft.AspNetCore.SignalR.Client;
+﻿using Microsoft.AspNetCore.SignalR.Client;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
-using System.Security.Policy;
-using System.Runtime.Remoting.Messaging;
-using System.Windows.Controls;
-using System.Diagnostics;
+using System.Windows;
 
 namespace WPF.NET_Framework
 {
@@ -36,10 +33,19 @@ namespace WPF.NET_Framework
 
             _HubConnection.On<String, String>("RX", (User, Message) =>
             {
-                this.Dispatcher.Invoke(() =>
-                {
-                    ListBox_Message.Items.Add($"{User}: {Message}");
-                });
+                
+                    this.Dispatcher.Invoke(() =>
+                        {
+                            if (Message.ToUpper().Trim() == "`")
+                            {
+                                CallMessageX(User);
+                            }
+                            else
+                            {
+                                ListBox_Message.Items.Add($"{User}: {Message}");
+                            }
+                        });
+                
             });
 
             await _HubConnection.StartAsync();
@@ -54,6 +60,55 @@ namespace WPF.NET_Framework
             {
                 await _HubConnection.SendAsync("TX", TextBox_User.Text , TextBox_Message.Text);
             }
+        }
+
+        private void CallMessageX(String User)
+        {
+            String Message = "";
+            Message = TaskMessageX();
+            ListBox_Message.Items.Add($"{User}: {Message}");
+        }
+
+        protected String TaskMessageX()
+        {
+            String Message = "";
+
+            Forecasts = GetForecastAsync(DateTime.Now);
+
+            foreach (var Forcast in Forecasts)
+            {
+                Message = String.Concat(Message, " ", Forcast.Date.ToString().Trim());
+            }
+
+            return Message;
+        }
+
+        public class WeatherForecast
+        {
+            public DateTime Date { get; set; }
+
+            public int TemperatureC { get; set; }
+
+            public string Summary { get; set; }
+
+            public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+        }
+
+        private WeatherForecast[] Forecasts;
+
+        private static readonly string[] Summaries = new[]
+        {
+            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+        };
+
+        public WeatherForecast[] GetForecastAsync(DateTime startDate)
+        {
+            return Enumerable.Range(1, 17).Select(index => new WeatherForecast
+            {
+                Date = startDate.AddDays(index),
+                TemperatureC = new Random().Next(-20, 55),
+                Summary = Summaries[new Random().Next(Summaries.Length)]
+            }).ToArray();
         }
     }
 }
