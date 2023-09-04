@@ -24,7 +24,7 @@ public class ChatHub : Hub
             return Task.CompletedTask;
         }
 
-        return Clients.All.SendAsync("RX", User, Message);
+        return Clients.All.SendAsync("RX", User.ToUpper(), Message);
     }
 
     private async void CallMessageX(String User)

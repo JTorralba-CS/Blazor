@@ -3,11 +3,11 @@ using BLAZOR.WASM.Server.Hubs;
 
 namespace BLAZOR.WASM.Server.Workers
 {
-    public class PulseWorker : BackgroundService
+    public class HEARTBEAT : BackgroundService
     {
         private IHubContext<ChatHub> _ChatHubContext;
 
-        public PulseWorker(IHubContext<ChatHub> ChatHubContext)
+        public HEARTBEAT(IHubContext<ChatHub> ChatHubContext)
         {
             _ChatHubContext = ChatHubContext;
         }
@@ -16,9 +16,9 @@ namespace BLAZOR.WASM.Server.Workers
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                await Task.Delay(17000);
+                await Task.Delay(16 * 1000);
 
-                await _ChatHubContext.Clients.All.SendAsync("RX", "Worker", "<PULSE>");
+                await _ChatHubContext.Clients.All.SendAsync("RX", "SIGNALR", "\u2764");
             }
         }
     }

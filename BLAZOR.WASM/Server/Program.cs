@@ -23,7 +23,7 @@ builder.Services.AddResponseCompression(opts =>
 });
 
 builder.Services.AddSingleton<WeatherForecastService>();
-builder.Services.AddHostedService<PulseWorker>();
+builder.Services.AddHostedService<HEARTBEAT>();
 
 var app = builder.Build();
 

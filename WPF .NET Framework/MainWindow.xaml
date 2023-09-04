@@ -11,7 +11,7 @@
         <TextBox x:Name="TextBox_User" HorizontalAlignment="Left" Margin="125,54,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="150"/>
         <Label x:Name="Label_Message" Content="Message" HorizontalAlignment="Left" Margin="50,81,0,0" VerticalAlignment="Top" Width="75"/>
         <TextBox x:Name="TextBox_Message" HorizontalAlignment="Left" Margin="125,85,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="525"/>
-        <Button x:Name="Button_Send" Content="Send" HorizontalAlignment="Left" Margin="55,122,0,0" VerticalAlignment="Top" Click="Button_Click" RenderTransformOrigin="0.833,0.854"/>
+        <Button x:Name="Button_Send" Content="Send" HorizontalAlignment="Left" Margin="55,122,0,0" VerticalAlignment="Top" Click="Button_Click" RenderTransformOrigin="0.833,0.854" IsEnabled="False"/>
         <ListBox x:Name="ListBox_Message" d:ItemsSource="{d:SampleData ItemCount=5}" Width="690" Height="550" Margin="55,110,145,-14"/>
     </Grid>
 </Window>
