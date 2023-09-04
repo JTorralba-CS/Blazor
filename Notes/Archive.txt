@@ -1,0 +1,35 @@
+Windows OS ----------
+
+- create archive subfolder
+
+- move project folders into archive subfolder
+
+- modify project(s) path in .sln file to path of archive subfolder
+
+
+Visual Studio ----------
+
+- open .sln file
+
+- create new solution subfolder
+
+- move project(s) into solution subfolder
+
+- modify project(s) NuGet package path
+
+- clean solution
+
+- rebuild solution
+
+
+Visual Studio ----------
+
+- set StartUp projects
+
+- execute solution / test project(s)
+
+- unload project(s)
+
+- clean solution
+
+- close solution
