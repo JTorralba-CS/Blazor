@@ -1,46 +1,41 @@
-create PWA (Blazor web assembly HTTPS/HOSTED/PROGRESSIVE app) project
+create WASM.Client (Blazor Web Assembly HTTPS/HOSTED/PROGRESSIVE) project
 
-create UI (Razor class library) project
+create UI (Razor Class Library) project
 
 
 UI ----------
 
-purge all boiler plate assets except Dependencies & wwwroot folder container
-
-add framework/package:
-
-<ItemGroup>
-  <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.2" />
-  <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.2" PrivateAssets="all" />
-</ItemGroup>
+purge all boiler plate assets in root
+purge all boiler plate assets in webroot
 
 
-PWA.Client ----------
+copy package reference from WASM.Client project:
+
+<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="X.X.XX" />
+<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="X.X.XX" PrivateAssets="all" />
+
+
+WASM.Client ----------
 
 add project reference to UI project
 
-move all wwwroot assets to UI project except wwwroot\index.html
-move *.razor (including Pages/Shared folder containers) to UI project
+move all wwwroot assets to UI project except service-worker.js, manifest.json, index.html 
+move all root *.razor (including Pages/Shared subfolders) to UI project
 
 Program.cs:
-using PWA.Client --> using UI
+using WASM.Client --> using UI
 
-wwwroot\index.html:
-href="css/bootstrap/bootstrap.min.css" --> href="_content/UI/css/bootstrap/bootstrap.min.css"
+wwwroot/index.html:
 href="css/app.css" --> href="_content/UI/css/app.css"
-href="favicon.png" --> href="_content/UI/favicon.png"
-href="icon-192.png" --> href="_content/UI/icon-192.png"
-href="icon-512.png" --> href="_content/UI/icon-512.png"
-href="manifest.json" --> href="_content/UI/manifest.json"
 
-settings:
-Include="wwwroot\service-worker.js" --> Include="..\..\UI\wwwroot\service-worker.js"
+wwwroot/manifest.json:
+"src": "icon-512.png" --> "src": "_content/UI/icon-512.png"
 
 
 UI ----------
 
-add project reference to PWA.Shared
+add project reference to WASM.Shared
 
 _imports.razor:
 @using PWA.Client --> @using UI
-@using PWA.Client.Shared --> @using UI.Shared
+@using PWA.Client.Shared --> @using UI.<Folder>
