@@ -8,7 +8,6 @@ UI ----------
 purge all boiler plate assets in root
 purge all boiler plate assets in webroot
 
-
 copy package reference from WASM.Client project:
 
 <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="X.X.XX" />
@@ -20,7 +19,7 @@ WASM.Client ----------
 add project reference to UI project
 
 move all wwwroot assets to UI project except service-worker.js, manifest.json, index.html 
-move all root *.razor (including Pages/Shared subfolders) to UI project
+move all root *.razor (including Pages & Shared subfolders) to UI project
 
 Program.cs:
 using WASM.Client --> using UI
@@ -37,5 +36,6 @@ UI ----------
 add project reference to WASM.Shared
 
 _imports.razor:
-@using PWA.Client --> @using UI
-@using PWA.Client.Shared --> @using UI.<Folder>
+@using WASM.Client --> @using UI
+@using WASM.Client.Pages --> @using UI.Pages
+@using WASM.Client.<Folder> --> @using UI.<Folder>

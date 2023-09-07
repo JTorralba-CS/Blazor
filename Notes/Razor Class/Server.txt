@@ -1,66 +1,52 @@
-create Server (Blazor server app) project
+create Server (Blazor Server) project
 
-create UI (Razor class library) project
+create UI (Razor Class Library) project
 
 
 UI ----------
 
-purge all boiler plate assets except Dependencies & wwwroot folder container
+purge all boiler plate assets in root
+purge all boiler plate assets in webroot
 
-add framework/package:
+remove package reference (DO NOT revmove if UI is consumed by WASM):
 
-<PropertyGroup>
-  <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
-</PropertyGroup>
-
-<ItemGroup>
-  <FrameworkReference Include="Microsoft.AspNetCore.App" />
-</ItemGroup>
-
-remove framework/package:
-
-<ItemGroup>
-  <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.2" />
-</ItemGroup>
+<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="X.X.X" />
 
 
 Server ----------
 
 add project reference to UI project
 
-move all wwwroot assets to UI project wwwroot
-move *.razor (including Pages/Shared/Data folder containers) to UI project
+add property:
+
+<AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+
+add framework reference:
+
+<ItemGroup>
+  <FrameworkReference Include="Microsoft.AspNetCore.App" />
+</ItemGroup>
+
+move all wwwroot assets to UI project
+move all root *.razor (including Pages & Shared subfolders) to UI project
+leave Pages/_Host.cshtml
 
 Program.cs:
-namespace Server.Data --> UI.Data
+
+add usings:
+
+using UI.Pages
+
+Pages\_Host.cshtml:
+@namespace Server.Pages --> @namespace UI.Pages
+href="css/site.css" --> href="_content/UI/css/site.css"
+if UI is consumed by WASM then:
+href="css/app.css" --> href="_content/UI/css/app.css"
 
 
 UI ----------
 
-Pages\_Host.cshtml:
-@namespace Server.Pages --> @namespace UI.Pages
-href="css/bootstrap/bootstrap.min.css" --> href="_content/UI/css/bootstrap/bootstrap.min.css"
-href="css/site.css" --> href="_content/UI/css/site.css"
-href="favicon.png" --> href="_content/UI/favicon.png"
-
-Pages\Error.cshmtl
-Server.Pages.ErrorModel --> UI.Pages.ErrorModel
-href="~/css/bootstrap/bootstrap.min.css" --> href="_content/UI/css/bootstrap/bootstrap.min.css"
-href="~/css/site.css" --> href="_content/UI/css/site.css"
-
-Pages\Error.cshmtl\Error.cshtml.cs:
-add using Microsoft.Extensions.Logging;
-Server.Pages --> UI.Pages
-
 _Imports.razor:
 remove @using Server
-@using Server.Shared --> @using UI.Shared
-
-Pages\FetchData.razor:
-@using Server.Data --> UI.Data
-
-Data\WeatherForecast.cs:
-namespace Server.Data --> UI.Data
-
-Data\WeatherForecastService.cs:
-namespace Server.Data --> UI.Data
+@using Server.Pages --> @using UI.Pages
+@using Server.<Folder> --> @using UI.<Folder>
