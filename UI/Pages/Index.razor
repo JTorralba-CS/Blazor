@@ -1,3 +1,43 @@
 ﻿@page "/"
 
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
+
+@functions{
+    ElementReference TextArea;
+    int LineNumber = 0;
+
+    void ScrollToEnd() {
+        JS.InvokeVoidAsync("scrollToEnd", new object[] {TextArea});
+    }
+}
+
 <h1 class="center">BLAZOR</h1>
+
+<div class="mb-3">
+  <label for="Messages" class="form-label">Messages</label>
+    <textarea class="form-control shadow-none" id="Messages" rows="10%" disabled @ref=TextArea>
+        @foreach (String Message in Messages)
+        {
+            @Message
+        }
+  </textarea>
+</div>
+
+<div class="input-group mb-3">
+    <input type="text" class="form-control shadow-none" placeholder="" aria-label="Message" aria-describedby="Send" @bind="Message">
+    <button class="btn btn-outline-secondary shadow-none" type="button" id="Send" @onclick="Send">Send</button>
+</div>
+
+@code {
+    private String? Message;
+
+    private List<String> Messages = new();
+
+    private void Send()
+    {
+        Messages.Add(Message + "\n");
+        InvokeAsync(StateHasChanged);
+        InvokeAsync(ScrollToEnd);
+    }
+}

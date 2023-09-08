@@ -31,6 +31,11 @@ h1:focus {
         content: "An error has occurred."
     }
 
+
+body {
+    margin:16px
+}
+
 .center {
     text-align: center;
 }
