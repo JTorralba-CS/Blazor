@@ -6,7 +6,7 @@ create UI (Razor Class Library) project
 UI ----------
 
 purge all boiler plate assets in root
-purge all boiler plate assets in webroot
+purge all boiler plate assets in wwwroot
 
 copy package reference from WASM.Client project:
 

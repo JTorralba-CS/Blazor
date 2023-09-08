@@ -6,7 +6,7 @@ create UI (Razor Class Library) project
 UI ----------
 
 purge all boiler plate assets in root
-purge all boiler plate assets in webroot
+purge all boiler plate assets in wwwroot
 
 remove package reference (DO NOT revmove if UI is consumed by WASM):
 
@@ -27,9 +27,9 @@ add framework reference:
   <FrameworkReference Include="Microsoft.AspNetCore.App" />
 </ItemGroup>
 
-move all wwwroot assets to UI project
-move all root *.razor (including Pages & Shared subfolders) to UI project
-leave Pages/_Host.cshtml
+move all wwwroot assets to UI project (delete site.css if UI already has app.css)
+move all root *.razor (including Pages & Shared subfolders except Pages/_Host.cshtml) to UI project
+
 
 Program.cs:
 
@@ -39,7 +39,6 @@ using UI.Pages
 
 Pages\_Host.cshtml:
 @namespace Server.Pages --> @namespace UI.Pages
-href="css/site.css" --> href="_content/UI/css/site.css"
 if UI is consumed by WASM then:
 href="css/app.css" --> href="_content/UI/css/app.css"
 
