@@ -1,41 +1,45 @@
-create WASM.Client (Blazor Web Assembly HTTPS/HOSTED/PROGRESSIVE) project
+WASM.Client ----------
 
-create UI (Razor Class Library) project
+create Blazor Web Assembly (HTTPS/HOSTED/PROGRESSIVE) project
+
+remove references to WASM.Shared project
+unload & remove & purge WASM.Shared project
+
+create favicon.ico
+
+Program.cs & App.razor:
+App --> Main
+
+rename App.razor to Main.razor
 
 
 UI ----------
 
+create Razor Class Library project
+
 purge all boiler plate assets in root
 purge all boiler plate assets in wwwroot
 
-copy package reference from WASM.Client project:
-
-<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="X.X.XX" />
-<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="X.X.XX" PrivateAssets="all" />
+copy package reference from WASM.Client project to UI project:
+<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="X.X.X" />
+<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="X.X.X" PrivateAssets="all" />
 
 
 WASM.Client ----------
 
 add project reference to UI project
 
-move all wwwroot assets to UI project except service-worker.js, manifest.json, index.html 
-move all root *.razor (including Pages & Shared subfolders) to UI project
-
-Program.cs:
-using WASM.Client --> using UI
+move all wwwroot assets to UI project except favicon.ico, index.html, manifest.json, service-worker.js
+move all *.razor & Pages folder to UI project
 
 wwwroot/index.html:
-href="css/app.css" --> href="_content/UI/css/app.css"
+add "_content/UI/" where necessary
 
 wwwroot/manifest.json:
-"src": "icon-512.png" --> "src": "_content/UI/icon-512.png"
+add "_content/UI/" where necessary
 
-
-UI ----------
-
-add project reference to WASM.Shared
-
-_imports.razor:
+_Imports.razor:
 @using WASM.Client --> @using UI
-@using WASM.Client.Pages --> @using UI.Pages
-@using WASM.Client.<Folder> --> @using UI.<Folder>
+
+Program.cs:
+using WASM.Client; --> using UI;

@@ -1,51 +1,33 @@
-create Server (Blazor Server) project
+Server ---------
 
-create UI (Razor Class Library) project
+create Blazor Server project
 
+create favicon.ico
 
-UI ----------
+App.razor:
+App --> Main
 
-purge all boiler plate assets in root
-purge all boiler plate assets in wwwroot
-
-remove package reference (DO NOT revmove if UI is consumed by WASM):
-
-<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="X.X.X" />
-
-
-Server ----------
+rename App.razor to Main.razor
 
 add project reference to UI project
 
 add property:
-
 <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
 
 add framework reference:
-
 <ItemGroup>
   <FrameworkReference Include="Microsoft.AspNetCore.App" />
 </ItemGroup>
 
-move all wwwroot assets to UI project (delete site.css if UI already has app.css)
-move all root *.razor (including Pages & Shared subfolders except Pages/_Host.cshtml) to UI project
-
-
-Program.cs:
-
-add usings:
-
-using UI.Pages
+leave appsettings.json, Pages/__Host.cshtml, wwwroot/favicon.ico
+delete duplicate assets already in UI project
 
 Pages\_Host.cshtml:
 @namespace Server.Pages --> @namespace UI.Pages
-if UI is consumed by WASM then:
-href="css/app.css" --> href="_content/UI/css/app.css"
+App --> Main
+site.css --> app.css
+add "_content/UI/" where necessary
+add page title "Server"
 
 
-UI ----------
 
-_Imports.razor:
-remove @using Server
-@using Server.Pages --> @using UI.Pages
-@using Server.<Folder> --> @using UI.<Folder>
