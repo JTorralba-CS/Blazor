@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using System;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -21,7 +20,7 @@ namespace WPF.NET_Framework
         public MainWindow()
         {
             InitializeComponent();
-            InizializzaConnectioTuBlazorHub();
+            //InizializzaConnectioTuBlazorHub();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -29,10 +28,10 @@ namespace WPF.NET_Framework
             Send();
         }
 
-        async Task InizializzaConnectioTuBlazorHub()
+        async Task InizializzaConnectioTuBlazorHub(String URL)
         {
             _HubConnection = new HubConnectionBuilder()
-                .WithUrl("https://localhost/chathub")
+                .WithUrl(URL)
                 .WithAutomaticReconnect()
                 .Build();
 
@@ -47,8 +46,8 @@ namespace WPF.NET_Framework
                         }
                         else
                         {
-                            ListBox_Message.Items.Add($"{User}: {Message}");
-                            UpdateScrollBar(ListBox_Message);
+                            ListBox_Messages.Items.Add($"{User}: {Message}");
+                            UpdateScrollBar(ListBox_Messages);
                         }
                     });
 
@@ -58,10 +57,12 @@ namespace WPF.NET_Framework
 
             if (IsConnected)
             {
+                TextBox_URL.IsEnabled = !IsConnected;
+                Button_Connect.IsEnabled = !IsConnected;
+                TextBox_Message.IsEnabled = IsConnected;
+                Button_Send.IsEnabled = IsConnected;
                 User = _HubConnection.ConnectionId.ToString().ToUpper().Substring(0, 5);
             }
-
-            Button_Send.IsEnabled = IsConnected;
         }
 
         public bool IsConnected => _HubConnection?.State == HubConnectionState.Connected;
@@ -79,50 +80,14 @@ namespace WPF.NET_Framework
         {
             String Message = "";
             Message = TaskMessageX();
-            ListBox_Message.Items.Add($"{User}: {Message}");
-            UpdateScrollBar(ListBox_Message);
+            ListBox_Messages.Items.Add($"{User}: {Message}");
+            UpdateScrollBar(ListBox_Messages);
         }
 
         protected String TaskMessageX()
         {
-            String Message = "";
-
-            Forecasts = GetForecastAsync(DateTime.Now);
-
-            foreach (var Forcast in Forecasts)
-            {
-                Message = String.Concat(Message, " ", Forcast.Date.ToString().Trim());
-            }
-
+            String Message = "`````````````````";
             return Message;
-        }
-
-        public class WeatherForecast
-        {
-            public DateTime Date { get; set; }
-
-            public int TemperatureC { get; set; }
-
-            public string Summary { get; set; }
-
-            public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-        }
-
-        private WeatherForecast[] Forecasts;
-
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
-        public WeatherForecast[] GetForecastAsync(DateTime startDate)
-        {
-            return Enumerable.Range(1, 17).Select(index => new WeatherForecast
-            {
-                Date = startDate.AddDays(index),
-                TemperatureC = new Random().Next(-20, 55),
-                Summary = Summaries[new Random().Next(Summaries.Length)]
-            }).ToArray();
         }
 
         private void UpdateScrollBar(ListBox listBox)
@@ -134,6 +99,16 @@ namespace WPF.NET_Framework
                 scrollViewer.ScrollToBottom();
             }
 
+        }
+
+        private void Send(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Button_Connect_Click(object sender, RoutedEventArgs e)
+        {
+            InizializzaConnectioTuBlazorHub(TextBox_URL.Text);
         }
     }
 }

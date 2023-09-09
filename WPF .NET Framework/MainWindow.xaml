@@ -5,10 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPF.NET_Framework"
         mc:Ignorable="d"
-        Title="WPF .NET Framework 4.6.2" Height="500" Width="800">
-    <Grid MinWidth="800" MinHeight="500" Height="500" Margin="0,0,0,0">
-        <ListBox x:Name="ListBox_Message" d:ItemsSource="{d:SampleData ItemCount=5}" ScrollViewer.VerticalScrollBarVisibility="Visible" Width="780" Margin="10,0,0,70" HorizontalAlignment="Left"/>
-        <TextBox x:Name="TextBox_Message" TextWrapping="Wrap" VerticalAlignment="Top" Margin="10,440,73,15"/>
-        <Button x:Name="Button_Send" Content="Send" VerticalAlignment="Top" Click="Button_Click" IsEnabled="False" Width="40" Margin="732,440,12,15"/>
+        Title="WPF .NET Framework 4.6.2" Height="516" Width="960" MinWidth="960" MinHeight="516" MaxWidth="960" MaxHeight="514" ScrollViewer.VerticalScrollBarVisibility="Disabled" ResizeMode="NoResize" HorizontalAlignment="Left" VerticalAlignment="Top">
+    <Grid HorizontalAlignment="Left" VerticalAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+        <TextBox x:Name="TextBox_URL" TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Top" Width="855" Margin="10,10,0,0" Height="25" VerticalContentAlignment="Center" Text="https://localhost/chathub"/>
+        <Button x:Name="Button_Connect" Content="Connect" Width="60" Height="25" Margin="870,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Click="Button_Connect_Click" IsEnabled="True"/>
+        <ListBox x:Name="ListBox_Messages" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="10,46,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Top" Width="920" Height="380"/>
+        <TextBox x:Name="TextBox_Message" TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Top" Width="855" Margin="10,440,0,0" Height="25" VerticalContentAlignment="Center" IsEnabled="False"/>
+        <Button x:Name="Button_Send" Content="Send" Width="60" Height="25" Margin="870,440,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Click="Button_Click" IsEnabled="False"/>
     </Grid>
 </Window>
