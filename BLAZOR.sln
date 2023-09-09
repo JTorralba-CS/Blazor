@@ -27,7 +27,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "Server\Server.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAUI", "MAUI\MAUI.csproj", "{6CAC3BC0-F45D-45A1-A420-34D75F3DCB6B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Standard", "Standard\Standard.csproj", "{DB74FA77-D087-48F1-B2CE-6B21CBEC92F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Standard", "Standard\Standard.csproj", "{DB74FA77-D087-48F1-B2CE-6B21CBEC92F2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPF .NET Framework", "WPF .NET Framework\WPF .NET Framework.csproj", "{AC4DCB65-04DC-4D5D-B9AD-441C334F79D0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -81,6 +83,10 @@ Global
 		{DB74FA77-D087-48F1-B2CE-6B21CBEC92F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB74FA77-D087-48F1-B2CE-6B21CBEC92F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB74FA77-D087-48F1-B2CE-6B21CBEC92F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC4DCB65-04DC-4D5D-B9AD-441C334F79D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC4DCB65-04DC-4D5D-B9AD-441C334F79D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC4DCB65-04DC-4D5D-B9AD-441C334F79D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC4DCB65-04DC-4D5D-B9AD-441C334F79D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
