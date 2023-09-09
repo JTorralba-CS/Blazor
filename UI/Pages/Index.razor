@@ -17,24 +17,29 @@
     }
 }
 
-<h1 class="center">BLAZOR</h1>
+@* <h1 class="center">BLAZOR</h1> *@
+
+<div class="input-group mb-3">
+    <input type="text" class="form-control shadow-none" placeholder="" aria-label="URL" aria-describedby="Connect" @bind="ChatHub">
+    <button class="btn btn-outline-secondary shadow-none" type="button" id="Connect" @onclick="Connect" disabled="@(IsConnected!=false)">Connect</button>
+</div>
 
 <div class="mb-3">
-  <label for="Messages" class="form-label"></label>
-    <textarea class="form-control shadow-none" id="Messages" rows="10%" disabled @ref=TextAreaX>
-        @foreach (String Message in Messages)
-        {
-            @Message
-        }
-  </textarea>
+    <textarea class="form-control shadow-none" id="Messages" rows="10" disabled @ref=TextAreaX>
+    @foreach (String Message in Messages)
+    {
+        @Message
+    }
+    </textarea>
 </div>
 
 <div class="input-group mb-3">
-    <input type="text" class="form-control shadow-none" placeholder="" aria-label="Message" aria-describedby="Send" @bind="Message">
+    <input type="text" class="form-control shadow-none" placeholder="" aria-label="Message" aria-describedby="Send" @bind="Message" disabled="@(IsConnected==false)">
     <button class="btn btn-outline-secondary shadow-none" type="button" id="Send" @onclick="Send" disabled="@(IsConnected==false)">Send</button>
 </div>
 
 @code {
+    private String? ChatHub;
     private String? User;
     private String? Message;
 
@@ -42,17 +47,15 @@
 
     protected override void OnParametersSet()
     {
-        Messages.Add("SIGNALR:  " + URL.Domain + " " + "\u2764" + "\n");
-        InvokeAsync(StateHasChanged);
-        InvokeAsync(ScrollToEnd);
+        ChatHub = URL.Domain + "chathub";
     }
 
     private HubConnection? _HubConnection;
 
-    protected override async Task OnInitializedAsync()
+    protected async Task InizializzaConnectioTuBlazorHub(String ChatHub)
     {
         _HubConnection = new HubConnectionBuilder()
-            .WithUrl(URL.Domain + "chathub")
+            .WithUrl(ChatHub)
             .WithAutomaticReconnect()
             .Build();
 
@@ -110,5 +113,10 @@
     {
         String Message = "`````````````````";
         return Message;
+    }
+
+    private async Task Connect()
+    {
+        await InizializzaConnectioTuBlazorHub(ChatHub);
     }
 }
