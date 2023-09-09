@@ -3,12 +3,17 @@
 @using Microsoft.JSInterop
 @inject IJSRuntime JS
 
+@inject UniformResourceLocator URL
+
+@using Microsoft.AspNetCore.SignalR.Client
+@implements IAsyncDisposable
+
 @functions{
-    ElementReference TextArea;
+    ElementReference TextAreaX;
     int LineNumber = 0;
 
     void ScrollToEnd() {
-        JS.InvokeVoidAsync("scrollToEnd", new object[] {TextArea});
+        JS.InvokeVoidAsync("scrollToEnd", new object[] {TextAreaX});
     }
 }
 
@@ -16,7 +21,7 @@
 
 <div class="mb-3">
   <label for="Messages" class="form-label">Messages</label>
-    <textarea class="form-control shadow-none" id="Messages" rows="10%" disabled @ref=TextArea>
+    <textarea class="form-control shadow-none" id="Messages" rows="10%" disabled @ref=TextAreaX>
         @foreach (String Message in Messages)
         {
             @Message
@@ -26,18 +31,83 @@
 
 <div class="input-group mb-3">
     <input type="text" class="form-control shadow-none" placeholder="" aria-label="Message" aria-describedby="Send" @bind="Message">
-    <button class="btn btn-outline-secondary shadow-none" type="button" id="Send" @onclick="Send">Send</button>
+    <button class="btn btn-outline-secondary shadow-none" type="button" id="Send" @onclick="Send" disabled="@(IsConnected==false)">Send</button>
 </div>
 
 @code {
+    private String? User;
     private String? Message;
 
     private List<String> Messages = new();
 
-    private void Send()
+    protected override void OnParametersSet()
     {
-        Messages.Add(Message + "\n");
+        Messages.Add("URL = " + URL.Domain + "\n");
         InvokeAsync(StateHasChanged);
         InvokeAsync(ScrollToEnd);
+    }
+
+    private HubConnection? _HubConnection;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _HubConnection = new HubConnectionBuilder()
+            .WithUrl(URL.Domain + "chathub")
+            .WithAutomaticReconnect()
+            .Build();
+
+        _HubConnection.On<String, String>("RX", (User, Message) =>
+        {
+            if (Message.ToUpper().Trim() == "`")
+            {
+                CallMessageX(User);
+            }
+            else
+            {
+                Messages.Add($"{User}: {Message}" + "\n");
+                InvokeAsync(StateHasChanged);
+                InvokeAsync(ScrollToEnd);
+            }
+        });
+        await _HubConnection.StartAsync();
+
+        if (IsConnected)
+        {
+            User = _HubConnection.ConnectionId.ToString().ToUpper().Substring(0, 5);
+        }
+    }
+
+    public bool IsConnected => _HubConnection?.State == HubConnectionState.Connected;
+
+    private async Task Send()
+    {
+        if (_HubConnection is not null)
+        {
+            await _HubConnection.SendAsync("TX", User, Message);
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_HubConnection is not null)
+        {
+            await _HubConnection.DisposeAsync();
+        }
+    }
+
+    private async void CallMessageX(String User)
+    {
+        String Message;
+        Message = await TaskMessageX();
+
+        Messages.Add($"{User}: {Message}" + "\n");
+        InvokeAsync(StateHasChanged);
+        InvokeAsync(ScrollToEnd);
+    }
+
+    protected async Task<String> TaskMessageX()
+    {
+        String Message = "`````````````````";
+        return Message;
     }
 }

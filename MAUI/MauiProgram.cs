@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Standard;
 
 namespace MAUI
 {
@@ -16,8 +17,10 @@ namespace MAUI
 
             builder.Services.AddMauiBlazorWebView();
 
+            builder.Services.AddSingleton<UniformResourceLocator>();
+
 #if DEBUG
-		builder.Services.AddBlazorWebViewDeveloperTools();
+            builder.Services.AddBlazorWebViewDeveloperTools();
 		builder.Logging.AddDebug();
 #endif
 

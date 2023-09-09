@@ -1,9 +1,23 @@
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.AspNetCore.SignalR;
+
+using WASM.Server.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+
+builder.Services.AddSignalR(HubOptions =>
+{
+    HubOptions.EnableDetailedErrors = true;
+});
+
+builder.Services.AddResponseCompression(opts =>
+{
+    opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+        new[] { "application/octest-stream" });
+});
 
 var app = builder.Build();
 
@@ -26,6 +40,9 @@ app.UseRouting();
 
 app.MapRazorPages();
 app.MapControllers();
+
+app.MapHub<ChatHub>("/chathub");
+
 app.MapFallbackToFile("index.html");
 
 app.Run();
