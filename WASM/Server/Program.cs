@@ -1,3 +1,4 @@
+using BLAZOR.WASM.Server.Workers;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.SignalR;
 
@@ -18,6 +19,8 @@ builder.Services.AddResponseCompression(opts =>
     opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
         new[] { "application/octest-stream" });
 });
+
+builder.Services.AddHostedService<HEARTBEAT>();
 
 var app = builder.Build();
 

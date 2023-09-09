@@ -42,7 +42,7 @@
 
     protected override void OnParametersSet()
     {
-        Messages.Add("URL = " + URL.Domain + "\n");
+        Messages.Add("SIGNALR: " + URL.Domain + "\n");
         InvokeAsync(StateHasChanged);
         InvokeAsync(ScrollToEnd);
     }
