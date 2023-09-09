@@ -16,7 +16,6 @@ namespace BLAZOR.WASM.Server.Workers
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                Console.WriteLine("DEBUGHB");
                 await Task.Delay(60 * 1000);
 
                 await _ChatHubContext.Clients.All.SendAsync("RX", "SIGNALR", "\u2764");

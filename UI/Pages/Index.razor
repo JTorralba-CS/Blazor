@@ -20,7 +20,7 @@
 <h1 class="center">BLAZOR</h1>
 
 <div class="mb-3">
-  <label for="Messages" class="form-label">Messages</label>
+  <label for="Messages" class="form-label"></label>
     <textarea class="form-control shadow-none" id="Messages" rows="10%" disabled @ref=TextAreaX>
         @foreach (String Message in Messages)
         {
@@ -42,7 +42,7 @@
 
     protected override void OnParametersSet()
     {
-        Messages.Add("SIGNALR: " + URL.Domain + "\n");
+        Messages.Add("SIGNALR:  " + URL.Domain + " " + "\u2764" + "\n");
         InvokeAsync(StateHasChanged);
         InvokeAsync(ScrollToEnd);
     }
@@ -64,7 +64,7 @@
             }
             else
             {
-                Messages.Add($"{User}: {Message}" + "\n");
+                Messages.Add($"{User}:  {Message}" + "\n");
                 InvokeAsync(StateHasChanged);
                 InvokeAsync(ScrollToEnd);
             }
@@ -84,6 +84,7 @@
         if (_HubConnection is not null)
         {
             await _HubConnection.SendAsync("TX", User, Message);
+            Message = "";
         }
     }
 
