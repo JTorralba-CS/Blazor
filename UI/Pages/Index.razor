@@ -20,7 +20,7 @@
 @* <h1 class="center">BLAZOR</h1> *@
 
 <div class="input-group mb-3">
-    <input type="text" class="form-control shadow-none" placeholder="" aria-label="URL" aria-describedby="Connect" @bind="ChatHub">
+    <input type="text" class="form-control shadow-none" placeholder="" aria-label="URL" aria-describedby="Connect" @bind="ChatHub" disabled="@(IsConnected!=false)">
     <button class="btn btn-outline-secondary shadow-none" type="button" id="Connect" @onclick="Connect" disabled="@(IsConnected!=false)">Connect</button>
 </div>
 
@@ -58,6 +58,10 @@
             .WithUrl(ChatHub)
             .WithAutomaticReconnect()
             .Build();
+
+        _HubConnection.Closed += RefreshDisconnected;
+        _HubConnection.Reconnecting += RefreshDisconnected;
+        _HubConnection.Reconnected += RefreshConnected;
 
         _HubConnection.On<String, String>("RX", (User, Message) =>
         {
@@ -118,5 +122,15 @@
     private async Task Connect()
     {
         await InizializzaConnectioTuBlazorHub(ChatHub);
+    }
+
+    private async Task RefreshDisconnected(Exception E)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task RefreshConnected(String S)
+    {
+        InvokeAsync(StateHasChanged);
     }
 }

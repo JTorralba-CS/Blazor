@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -34,6 +33,10 @@ namespace WPF.NET_Framework
                 .WithUrl(URL)
                 .WithAutomaticReconnect()
                 .Build();
+
+            _HubConnection.Closed += RefreshDisconnected;
+            _HubConnection.Reconnecting += RefreshDisconnected;
+            _HubConnection.Reconnected += RefreshConnected;
 
             _HubConnection.On<String, String>("RX", (User, Message) =>
             {
@@ -101,14 +104,39 @@ namespace WPF.NET_Framework
 
         }
 
-        private void Send(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void Button_Connect_Click(object sender, RoutedEventArgs e)
         {
             InizializzaConnectioTuBlazorHub(TextBox_URL.Text);
         }
+
+        async Task RefreshDisconnected(Exception E)
+        {
+            this.Dispatcher.Invoke(() =>
+            {
+                if (!IsConnected)
+                {
+                    TextBox_URL.IsEnabled = !IsConnected;
+                    Button_Connect.IsEnabled = !IsConnected;
+                    TextBox_Message.IsEnabled = IsConnected;
+                    Button_Send.IsEnabled = IsConnected;
+                }
+            });
+        }
+
+        async Task RefreshConnected(String S)
+        {
+            this.Dispatcher.Invoke(() =>
+            {
+                if (IsConnected)
+                {
+                    TextBox_URL.IsEnabled = !IsConnected;
+                    Button_Connect.IsEnabled = !IsConnected;
+                    TextBox_Message.IsEnabled = IsConnected;
+                    Button_Send.IsEnabled = IsConnected;
+                    User = _HubConnection.ConnectionId.ToString().ToUpper().Substring(0, 5);
+                }
+            });
+        }
+
     }
 }
