@@ -17,11 +17,9 @@
     }
 }
 
-@* <h1 class="center">BLAZOR</h1> *@
-
 <div class="input-group mb-3">
     <input type="text" class="form-control shadow-none" placeholder="" aria-label="URL" aria-describedby="Connect" @bind="ChatHub" disabled="@(IsConnected!=false)">
-    <button class="btn btn-outline-secondary shadow-none" type="button" id="Connect" @onclick="Connect" disabled="@(IsConnected!=false)">Connect</button>
+    <button class="btn btn-outline-secondary shadow-none" type="button" id="Connect" @onclick="Connect" disabled="@(IsConnected!=false)">@User</button>
 </div>
 
 <div class="mb-3">
@@ -40,19 +38,38 @@
 
 @code {
     private String? ChatHub;
-    private String? User;
+
+    private String? User = "Connect";
+
     private String? Message;
 
     private List<String> Messages = new();
+
+    private HubConnection? _HubConnection;
+
+    private bool IsConnected => _HubConnection?.State == HubConnectionState.Connected;
 
     protected override void OnParametersSet()
     {
         ChatHub = URL.Domain + "chathub";
     }
 
-    private HubConnection? _HubConnection;
+    private async Task Connect()
+    {
+        await InitializeSignalR(ChatHub);
+    }
 
-    protected async Task InizializzaConnectioTuBlazorHub(String ChatHub)
+
+    private async Task Send()
+    {
+        if (_HubConnection is not null)
+        {
+            await _HubConnection.SendAsync("TX", User, Message);
+            Message = "";
+        }
+    }
+
+    private async Task InitializeSignalR(String ChatHub)
     {
         _HubConnection = new HubConnectionBuilder()
             .WithUrl(ChatHub)
@@ -67,32 +84,31 @@
         {
             if (Message.ToUpper().Trim() == "`")
             {
-                CallMessageX(User);
+                CustomClientEvent(User);
             }
             else
             {
-                Messages.Add($"{User}:  {Message}" + "\n");
-                InvokeAsync(StateHasChanged);
-                InvokeAsync(ScrollToEnd);
+                AppendMessage(User, Message);
             }
         });
         await _HubConnection.StartAsync();
 
         if (IsConnected)
         {
-            User = _HubConnection.ConnectionId.ToString().ToUpper().Substring(0, 5);
+            await RefreshConnected("");
         }
     }
 
-    public bool IsConnected => _HubConnection?.State == HubConnectionState.Connected;
-
-    private async Task Send()
+    private async Task RefreshConnected(String S)
     {
-        if (_HubConnection is not null)
-        {
-            await _HubConnection.SendAsync("TX", User, Message);
-            Message = "";
-        }
+        User = _HubConnection.ConnectionId.ToString().ToUpper().Substring(0, 5);
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task RefreshDisconnected(Exception E)
+    {
+        User = "Connect";
+        InvokeAsync(StateHasChanged);
     }
 
     public async ValueTask DisposeAsync()
@@ -103,34 +119,15 @@
         }
     }
 
-    private async void CallMessageX(String User)
+    private void CustomClientEvent(String User)
     {
-        String Message;
-        Message = await TaskMessageX();
+        AppendMessage(User, "<Custom Client Event>");
+    }
 
-        Messages.Add($"{User}: {Message}" + "\n");
+    private void AppendMessage(String User, String Message)
+    {
+        Messages.Add($"{User}:  {Message}" + "\n");
         InvokeAsync(StateHasChanged);
         InvokeAsync(ScrollToEnd);
-    }
-
-    protected async Task<String> TaskMessageX()
-    {
-        String Message = "`````````````````";
-        return Message;
-    }
-
-    private async Task Connect()
-    {
-        await InizializzaConnectioTuBlazorHub(ChatHub);
-    }
-
-    private async Task RefreshDisconnected(Exception E)
-    {
-        InvokeAsync(StateHasChanged);
-    }
-
-    private async Task RefreshConnected(String S)
-    {
-        InvokeAsync(StateHasChanged);
     }
 }

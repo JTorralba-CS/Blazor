@@ -17,7 +17,7 @@ namespace WPF.NET_Framework
 
         HubConnection _HubConnection;
 
-        public bool IsConnected => _HubConnection?.State == HubConnectionState.Connected;
+        private bool IsConnected => _HubConnection?.State == HubConnectionState.Connected;
 
         public MainWindow()
         {
@@ -26,7 +26,7 @@ namespace WPF.NET_Framework
 
         private void Button_Connect_Click(object sender, RoutedEventArgs e)
         {
-            InitializeSignalR(TextBox_URL.Text);
+            InitializeSignalR(TextBox_ChatHub.Text);
         }
 
         private void Button_Send_Click(object sender, RoutedEventArgs e)
@@ -34,10 +34,10 @@ namespace WPF.NET_Framework
             Send();
         }
 
-        async Task InitializeSignalR(String URL)
+        private async Task InitializeSignalR(String ChatHub)
         {
             _HubConnection = new HubConnectionBuilder()
-                .WithUrl(URL)
+                .WithUrl(ChatHub)
                 .WithAutomaticReconnect()
                 .Build();
 
@@ -68,13 +68,13 @@ namespace WPF.NET_Framework
             }
         }
 
-        async Task RefreshConnected(String S)
+        private async Task RefreshConnected(String S)
         {
             this.Dispatcher.Invoke(() =>
             {
                 if (IsConnected)
                 {
-                    TextBox_URL.IsEnabled = !IsConnected;
+                    TextBox_ChatHub.IsEnabled = !IsConnected;
                     Button_Connect.IsEnabled = !IsConnected;
                     TextBox_Message.IsEnabled = IsConnected;
                     Button_Send.IsEnabled = IsConnected;
@@ -84,13 +84,13 @@ namespace WPF.NET_Framework
             });
         }
 
-        async Task RefreshDisconnected(Exception E)
+        private async Task RefreshDisconnected(Exception E)
         {
             this.Dispatcher.Invoke(() =>
             {
                 if (!IsConnected)
                 {
-                    TextBox_URL.IsEnabled = !IsConnected;
+                    TextBox_ChatHub.IsEnabled = !IsConnected;
                     Button_Connect.IsEnabled = !IsConnected;
                     TextBox_Message.IsEnabled = IsConnected;
                     Button_Send.IsEnabled = IsConnected;
@@ -100,7 +100,7 @@ namespace WPF.NET_Framework
             });
         }
 
-        async Task Send()
+        private async Task Send()
         {
             if (_HubConnection != null)
             {
@@ -114,7 +114,7 @@ namespace WPF.NET_Framework
             AppendMessage(User, "<Custom Client Event>");
         }
 
-        public void AppendMessage(String User, String Message)
+        private void AppendMessage(String User, String Message)
         {
             BrushConverter BC = new BrushConverter();
             String Color;

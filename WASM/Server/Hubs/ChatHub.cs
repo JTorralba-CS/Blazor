@@ -8,23 +8,17 @@ public class ChatHub : Hub
     {
         if (Message.ToUpper().Trim() == "~")
         {
-            CallMessageX(User);
+            CustomServerEvent(User);
             return Task.CompletedTask;
         }
-
-        return Clients.All.SendAsync("RX", User, Message);
+        else
+        {
+            return Clients.All.SendAsync("RX", User, Message);
+        }
     }
 
-    private async void CallMessageX(String User)
+    private async void CustomServerEvent(String User)
     {
-        String Message;
-        Message = await TaskMessageX();
-        Clients.All.SendAsync("RX", User, Message);
-    }
-
-    protected async Task<String> TaskMessageX()
-    {
-        String Message = "~~~~~~~~~~~~~~~~~";
-        return Message;
+        Clients.All.SendAsync("RX", User, "<Custom Server Event>");
     }
 }
