@@ -17,23 +17,27 @@
     }
 }
 
-<div class="input-group mb-3">
-    <input type="text" class="form-control shadow-none" placeholder="" aria-label="URL" aria-describedby="Connect" @bind="ChatHub" disabled="@(IsConnected!=false)">
-    <button class="btn btn-outline-secondary shadow-none" type="button" id="Connect" @onclick="Connect" disabled="@(IsConnected!=false)">@User</button>
-</div>
+<div class="c-wrapper">
+    <header class="c-header">
+        <div class="input-group mb-3">
+            <input type="text" class="form-control shadow-none" placeholder="" aria-label="URL" aria-describedby="Connect" @bind="ChatHub" disabled="@(IsConnected!=false)">
+            <button class="btn btn-outline-secondary shadow-none" type="button" id="Connect" @onclick="Connect" disabled="@(IsConnected!=false)">@User</button>
+        </div>
+    </header>
+    <div class="c-body" @ref=TextAreaX>
+        @foreach (DM Message in DMs)
+        {
+            <Message>@Message.User: <font color=@Message.Color>@Message.Message</font></Message>
 
-<div class="mb-3">
-    <textarea class="form-control shadow-none" id="Messages" rows="10" disabled @ref=TextAreaX>
-    @foreach (String Message in Messages)
-    {
-        @Message
-    }
-    </textarea>
-</div>
-
-<div class="input-group mb-3">
-    <input type="text" class="form-control shadow-none" placeholder="" aria-label="Message" aria-describedby="Send" @bind="Message" disabled="@(IsConnected==false)">
-    <button class="btn btn-outline-secondary shadow-none" type="button" id="Send" @onclick="Send" disabled="@(IsConnected==false)">Send</button>
+            <br />
+        }
+    </div>
+    <footer class="c-footer">
+        <div class="input-group mb-3">
+            <input type="text" class="form-control shadow-none" placeholder="" aria-label="Message" aria-describedby="Send" @bind="Message" disabled="@(IsConnected==false)">
+            <button class="btn btn-outline-secondary shadow-none" type="button" id="Send" @onclick="Send" disabled="@(IsConnected==false)">Send</button>
+        </div>
+    </footer>
 </div>
 
 @code {
@@ -43,7 +47,7 @@
 
     private String? Message;
 
-    private List<String> Messages = new();
+    private List<DM> DMs = new();
 
     private HubConnection? _HubConnection;
 
@@ -58,7 +62,6 @@
     {
         await InitializeSignalR(ChatHub);
     }
-
 
     private async Task Send()
     {
@@ -126,8 +129,37 @@
 
     private void AppendMessage(String User, String Message)
     {
-        Messages.Add($"{User}:  {Message}" + "\n");
+        String Color;
+
+        if (User == this.User)
+        {
+            Color = "Green";
+        }
+        else if (User == "SIGNALR")
+        {
+            Color = "Red";
+        }
+        else
+        {
+            Color = "Blue";
+        }
+
+        DM _DM = new();
+
+        _DM.User = User;
+        _DM.Message = Message;
+        _DM.Color = Color;
+
+        DMs.Add(_DM);
+
         InvokeAsync(StateHasChanged);
         InvokeAsync(ScrollToEnd);
+    }
+
+    public class DM
+    {
+        public string User { get; set; }
+        public string Message { get; set; }
+        public string Color { get; set; }
     }
 }
