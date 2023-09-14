@@ -102,10 +102,31 @@ namespace WPF.NET_Framework
 
         private async Task Send()
         {
-            if (_HubConnection != null)
+            String NameCheck = TextBox_Message.Text.Trim().ToLower();
+
+            if (NameCheck.StartsWith("mi nombre es"))
             {
-                await _HubConnection.SendAsync("TX", User, TextBox_Message.Text);
-                TextBox_Message.Text = "";
+                Char[] CH = " ".ToCharArray();
+                String[] NameCheckList = NameCheck.Split(CH);
+                if (NameCheckList.Length == 4)
+                {
+                    if (_HubConnection != null)
+                    {
+                        await _HubConnection.SendAsync("TX", "SIGNALR", User + " --> " + NameCheckList[3].ToUpper());
+                        TextBox_Message.Text = "";
+                    }
+
+                    User = NameCheckList[3].ToUpper();
+                    Button_Connect.Content = User;
+                }
+            }
+            else
+            {
+                if (_HubConnection != null)
+                {
+                    await _HubConnection.SendAsync("TX", User, TextBox_Message.Text);
+                    TextBox_Message.Text = "";
+                }
             }
         }
 

@@ -65,10 +65,29 @@
 
     private async Task Send()
     {
-        if (_HubConnection is not null)
+        String NameCheck = Message.Trim().ToLower();
+
+        if (NameCheck.StartsWith("mi nombre es"))
         {
-            await _HubConnection.SendAsync("TX", User, Message);
-            Message = "";
+            String[] NameCheckList = NameCheck.Split("mi nombre es");
+            if (NameCheckList.Length == 2)
+            {
+                if (_HubConnection is not null)
+                {
+                    await _HubConnection.SendAsync("TX", "SIGNALR", User + " --> " + NameCheckList[1].ToUpper());
+                    Message = "";
+                }
+
+                User = NameCheckList[1].ToUpper();
+            }
+        }
+        else
+        {
+            if (_HubConnection is not null)
+            {
+                await _HubConnection.SendAsync("TX", User, Message);
+                Message = "";
+            }
         }
     }
 
