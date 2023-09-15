@@ -240,5 +240,11 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Standard\Standard.csproj">
+      <Project>{db74fa77-d087-48f1-b2ce-6b21cbec92f2}</Project>
+      <Name>Standard</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

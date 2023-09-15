@@ -1,24 +1,26 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Standard;
 
 namespace WASM.Server.Hubs;
 
 public class ChatHub : Hub
 {
-    public Task TX(String User, String Message)
+    public Task TX(Message _Message)
     {
-        if (Message.ToUpper().Trim() == "~")
+        if (_Message.Content.ToUpper().Trim() == "~")
         {
-            CustomServerEvent(User);
+            CustomServerEvent(_Message);
             return Task.CompletedTask;
         }
         else
         {
-            return Clients.All.SendAsync("RX", User, Message);
+            return Clients.All.SendAsync("RX", _Message);
         }
     }
 
-    private async void CustomServerEvent(String User)
+    private async void CustomServerEvent(Message _Message)
     {
-        Clients.All.SendAsync("RX", User, "<Custom Server Event>");
+        _Message.Content = "<Custom Server Event>";
+        Clients.All.SendAsync("RX", _Message);
     }
 }

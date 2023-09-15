@@ -21,20 +21,31 @@
     <header class="c-header">
         <div class="input-group mb-3">
             <input type="text" class="form-control shadow-none" placeholder="" aria-label="URL" aria-describedby="Connect" @bind="ChatHub" disabled="@(IsConnected!=false)">
-            <button class="btn btn-outline-secondary shadow-none" type="button" id="Connect" @onclick="Connect" disabled="@(IsConnected!=false)">@User</button>
+            <button class="btn btn-outline-secondary shadow-none" type="button" id="Connect" @onclick="Connect" disabled="@(IsConnected!=false)">@_Message.User</button>
         </div>
     </header>
     <div class="c-body" @ref=TextAreaX>
-        @foreach (DM Message in DMs)
+        @foreach (Message _Message in _Messages)
         {
-            <Message>@Message.User: <font color=@Message.Color>@Message.Message</font></Message>
-
+            if (_Message.User == this._Message.User)
+            {
+                FontColor = "Green";
+            }
+            else
+            {
+                FontColor = "Blue";
+            }
+            <Message>
+                @_Message.Time
+                @_Message.User:
+                <font color=@FontColor>@_Message.Content</font>
+            </Message>
             <br />
         }
     </div>
     <footer class="c-footer">
         <div class="input-group mb-3">
-            <input type="text" class="form-control shadow-none" placeholder="" aria-label="Message" aria-describedby="Send" @bind="Message" disabled="@(IsConnected==false)">
+            <input type="text" class="form-control shadow-none" placeholder="" aria-label="Message" aria-describedby="Send" @bind="_Message.Content" disabled="@(IsConnected==false)">
             <button class="btn btn-outline-secondary shadow-none" type="button" id="Send" @onclick="Send" disabled="@(IsConnected==false)">Send</button>
         </div>
     </footer>
@@ -42,20 +53,18 @@
 
 @code {
     private String? ChatHub;
-
-    private String? User = "Connect";
-
-    private String? Message;
-
-    private List<DM> DMs = new();
-
     private HubConnection? _HubConnection;
-
     private bool IsConnected => _HubConnection?.State == HubConnectionState.Connected;
+
+    private Message _Message = new();
+    private List<Message> _Messages = new();
+    private String FontColor;
 
     protected override void OnParametersSet()
     {
         ChatHub = URL.Domain + "chathub";
+        _Message.User = "Connect";
+
     }
 
     private async Task Connect()
@@ -65,7 +74,9 @@
 
     private async Task Send()
     {
-        String NameCheck = Message.Trim().ToLower();
+        _Message.Time = DateTime.Now;
+
+        String NameCheck = _Message.Content.Trim().ToLower();
 
         if (NameCheck.StartsWith("mi nombre es"))
         {
@@ -74,19 +85,20 @@
             {
                 if (_HubConnection is not null)
                 {
-                    await _HubConnection.SendAsync("TX", "SIGNALR", User + " --> " + NameCheckList[1].ToUpper());
-                    Message = "";
+                    _Message.Content = "Call me " + NameCheckList[1].ToUpper() +".";
+                    await _HubConnection.SendAsync("TX", _Message);
+                    _Message.Content = "";
                 }
 
-                User = NameCheckList[1].ToUpper();
+                _Message.User = NameCheckList[1].ToUpper();
             }
         }
         else
         {
             if (_HubConnection is not null)
             {
-                await _HubConnection.SendAsync("TX", User, Message);
-                Message = "";
+                await _HubConnection.SendAsync("TX", _Message);
+                _Message.Content = "";
             }
         }
     }
@@ -102,15 +114,15 @@
         _HubConnection.Reconnecting += RefreshDisconnected;
         _HubConnection.Reconnected += RefreshConnected;
 
-        _HubConnection.On<String, String>("RX", (User, Message) =>
+        _HubConnection.On<Message>("RX", (_Message) =>
         {
-            if (Message.ToUpper().Trim() == "`")
+            if (_Message.Content.ToUpper().Trim() == "`")
             {
-                CustomClientEvent(User);
+                CustomClientEvent(_Message);
             }
             else
             {
-                AppendMessage(User, Message);
+                AppendMessage(_Message);
             }
         });
         await _HubConnection.StartAsync();
@@ -123,13 +135,13 @@
 
     private async Task RefreshConnected(String S)
     {
-        User = _HubConnection.ConnectionId.ToString().ToUpper().Substring(0, 5);
+        _Message.User = _HubConnection.ConnectionId.ToString().ToUpper().Substring(0, 5);
         InvokeAsync(StateHasChanged);
     }
 
     private async Task RefreshDisconnected(Exception E)
     {
-        User = "Connect";
+        _Message.User = "Connect";
         InvokeAsync(StateHasChanged);
     }
 
@@ -141,44 +153,17 @@
         }
     }
 
-    private void CustomClientEvent(String User)
+    private void CustomClientEvent(Message _Message)
     {
-        AppendMessage(User, "<Custom Client Event>");
+        _Message.Content = "<Custom Client Event>";
+        AppendMessage(_Message);
     }
 
-    private void AppendMessage(String User, String Message)
+    private void AppendMessage(Message _Message)
     {
-        String Color;
-
-        if (User == this.User)
-        {
-            Color = "Green";
-        }
-        else if (User == "SIGNALR")
-        {
-            Color = "Red";
-        }
-        else
-        {
-            Color = "Blue";
-        }
-
-        DM _DM = new();
-
-        _DM.User = User;
-        _DM.Message = Message;
-        _DM.Color = Color;
-
-        DMs.Add(_DM);
+        _Messages.Add(_Message);
 
         InvokeAsync(StateHasChanged);
         InvokeAsync(ScrollToEnd);
-    }
-
-    public class DM
-    {
-        public string User { get; set; }
-        public string Message { get; set; }
-        public string Color { get; set; }
     }
 }

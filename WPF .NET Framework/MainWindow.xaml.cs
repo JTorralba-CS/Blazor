@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using Standard;
 using System;
+using System.Diagnostics.Eventing.Reader;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,15 +15,16 @@ namespace WPF.NET_Framework
     /// </summary>
     public partial class MainWindow : Window
     {
-        private String User = "Connect";
-
         HubConnection _HubConnection;
+
+        private Message _Message = new Message();
 
         private bool IsConnected => _HubConnection?.State == HubConnectionState.Connected;
 
         public MainWindow()
         {
             InitializeComponent();
+            _Message.User = "Connect";
         }
 
         private void Button_Connect_Click(object sender, RoutedEventArgs e)
@@ -45,17 +48,17 @@ namespace WPF.NET_Framework
             _HubConnection.Reconnecting += RefreshDisconnected;
             _HubConnection.Reconnected += RefreshConnected;
 
-            _HubConnection.On<String, String>("RX", (User, Message) =>
+            _HubConnection.On<Message>("RX", (_Message) =>
             {
                 this.Dispatcher.Invoke(() =>
                     {
-                        if (Message.ToUpper().Trim() == "`")
+                        if (_Message.Content.ToUpper().Trim() == "`")
                         {
-                            CustomClientEvent(User);
+                            CustomClientEvent(_Message);
                         }
                         else
                         {
-                            AppendMessage(User, Message);
+                            AppendMessage(_Message);
                         }
                     });
             });
@@ -78,8 +81,8 @@ namespace WPF.NET_Framework
                     Button_Connect.IsEnabled = !IsConnected;
                     TextBox_Message.IsEnabled = IsConnected;
                     Button_Send.IsEnabled = IsConnected;
-                    User = _HubConnection.ConnectionId.ToString().ToUpper().Substring(0, 5);
-                    Button_Connect.Content = User;
+                    _Message.User = _HubConnection.ConnectionId.ToString().ToUpper().Substring(0, 5);
+                    Button_Connect.Content = _Message.User;
                 }
             });
         }
@@ -94,14 +97,16 @@ namespace WPF.NET_Framework
                     Button_Connect.IsEnabled = !IsConnected;
                     TextBox_Message.IsEnabled = IsConnected;
                     Button_Send.IsEnabled = IsConnected;
-                    User = "Connect";
-                    Button_Connect.Content = User;
+                    _Message.User = "Connect";
+                    Button_Connect.Content = _Message.User;
                 }
             });
         }
 
         private async Task Send()
         {
+            _Message.Time = DateTime.Now;
+
             String NameCheck = TextBox_Message.Text.Trim().ToLower();
 
             if (NameCheck.StartsWith("mi nombre es"))
@@ -112,39 +117,44 @@ namespace WPF.NET_Framework
                 {
                     if (_HubConnection != null)
                     {
-                        await _HubConnection.SendAsync("TX", "SIGNALR", User + " --> " + NameCheckList[3].ToUpper());
+                        _Message.Content = "Call me " + NameCheckList[3].ToUpper() + ".";
+                        await _HubConnection.SendAsync("TX", _Message);
+                        _Message.Content = "";
                         TextBox_Message.Text = "";
                     }
 
-                    User = NameCheckList[3].ToUpper();
-                    Button_Connect.Content = User;
+                    _Message.User = NameCheckList[3].ToUpper();
+                    Button_Connect.Content = _Message.User;
                 }
             }
             else
             {
                 if (_HubConnection != null)
                 {
-                    await _HubConnection.SendAsync("TX", User, TextBox_Message.Text);
+                    _Message.Content = TextBox_Message.Text;
+                    await _HubConnection.SendAsync("TX", _Message);
+                    _Message.Content = "";
                     TextBox_Message.Text = "";
                 }
             }
         }
 
-        private void CustomClientEvent(String User)
+        private void CustomClientEvent(Message _Message)
         {
-            AppendMessage(User, "<Custom Client Event>");
+            _Message.Content = "<Custom Client Event>";
+            AppendMessage(_Message);
         }
 
-        private void AppendMessage(String User, String Message)
+        private void AppendMessage(Message _Message)
         {
             BrushConverter BC = new BrushConverter();
             String Color;
 
-            if (User == this.User)
+            if (_Message.User == this._Message.User)
             {
                 Color = "Green";
             }
-            else if (User == "SIGNALR")
+            else if (_Message.Content == "\u2764")
             {
                 Color = "Red";
             }
@@ -154,7 +164,7 @@ namespace WPF.NET_Framework
             }
 
             TextRange TR_User = new TextRange(RichTextBox.Document.ContentEnd, RichTextBox.Document.ContentEnd);
-            TR_User.Text = User + ":  ";
+            TR_User.Text = _Message.Time.ToString() + " " + _Message.User + ": ";
             try
             {
                 TR_User.ApplyPropertyValue(TextElement.ForegroundProperty, BC.ConvertFromString("Black"));
@@ -164,7 +174,7 @@ namespace WPF.NET_Framework
             }
 
             TextRange TR_Message = new TextRange(RichTextBox.Document.ContentEnd, RichTextBox.Document.ContentEnd);
-            TR_Message.Text = Message;
+            TR_Message.Text = _Message.Content;
             try
             {
                 TR_Message.ApplyPropertyValue(TextElement.ForegroundProperty, BC.ConvertFromString(Color));

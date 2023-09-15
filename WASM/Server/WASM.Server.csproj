@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Standard\Standard.csproj" />
     <ProjectReference Include="..\Client\WASM.Client.csproj" />
   </ItemGroup>
 
