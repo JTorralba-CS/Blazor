@@ -27,7 +27,7 @@
     <div class="c-body" @ref=TextAreaX>
         @foreach (Message _Message in _Messages)
         {
-            if (_Message.User == this._Message.User)
+            if (_Message.User == this._Message.User || Alias.Contains(_Message.User))
             {
                 FontColor = "Green";
             }
@@ -59,12 +59,13 @@
     private Message _Message = new();
     private List<Message> _Messages = new();
     private String FontColor;
+    private List<String> Alias = new();
 
     protected override void OnParametersSet()
     {
         ChatHub = URL.Domain + "chathub";
         _Message.User = "Connect";
-
+        Alias.Add(_Message.User);
     }
 
     private async Task Connect()
@@ -90,7 +91,8 @@
                     _Message.Content = "";
                 }
 
-                _Message.User = NameCheckList[1].ToUpper();
+                _Message.User = NameCheckList[1].ToUpper().Trim();
+                Alias.Add(_Message.User);
             }
         }
         else
@@ -136,6 +138,7 @@
     private async Task RefreshConnected(String S)
     {
         _Message.User = _HubConnection.ConnectionId.ToString().ToUpper().Substring(0, 5);
+        Alias.Add(_Message.User);
         InvokeAsync(StateHasChanged);
     }
 

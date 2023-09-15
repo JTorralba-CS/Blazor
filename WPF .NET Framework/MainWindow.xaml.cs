@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using Standard;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using System.Threading.Tasks;
 using System.Windows;
@@ -16,15 +17,16 @@ namespace WPF.NET_Framework
     public partial class MainWindow : Window
     {
         HubConnection _HubConnection;
+        private bool IsConnected => _HubConnection?.State == HubConnectionState.Connected;
 
         private Message _Message = new Message();
-
-        private bool IsConnected => _HubConnection?.State == HubConnectionState.Connected;
+        private List<String> Alias = new List<String>();
 
         public MainWindow()
         {
             InitializeComponent();
             _Message.User = "Connect";
+            Alias.Add(_Message.User);
         }
 
         private void Button_Connect_Click(object sender, RoutedEventArgs e)
@@ -83,6 +85,7 @@ namespace WPF.NET_Framework
                     Button_Send.IsEnabled = IsConnected;
                     _Message.User = _HubConnection.ConnectionId.ToString().ToUpper().Substring(0, 5);
                     Button_Connect.Content = _Message.User;
+                    Alias.Add(_Message.User);
                 }
             });
         }
@@ -123,8 +126,9 @@ namespace WPF.NET_Framework
                         TextBox_Message.Text = "";
                     }
 
-                    _Message.User = NameCheckList[3].ToUpper();
+                    _Message.User = NameCheckList[3].ToUpper().Trim();
                     Button_Connect.Content = _Message.User;
+                    Alias.Add(_Message.User);
                 }
             }
             else
@@ -150,7 +154,7 @@ namespace WPF.NET_Framework
             BrushConverter BC = new BrushConverter();
             String Color;
 
-            if (_Message.User == this._Message.User)
+            if (_Message.User == this._Message.User || Alias.Contains(_Message.User))
             {
                 Color = "Green";
             }
