@@ -81,17 +81,18 @@
 
         if (NameCheck.StartsWith("mi nombre es"))
         {
-            String[] NameCheckList = NameCheck.Split("mi nombre es");
-            if (NameCheckList.Length == 2)
+            Char[] Space = " ".ToCharArray();
+            String[] NameCheckList = NameCheck.Split(Space);
+            if (NameCheckList.Length == 4)
             {
                 if (_HubConnection is not null)
                 {
-                    _Message.Content = "Call me " + NameCheckList[1].ToUpper() +".";
+                    _Message.Content = "Call me " + NameCheckList[3].ToUpper() +".";
                     await _HubConnection.SendAsync("TX", _Message);
                     _Message.Content = "";
                 }
 
-                _Message.User = NameCheckList[1].ToUpper().Trim();
+                _Message.User = NameCheckList[3].ToUpper().Trim();
                 Alias.Add(_Message.User);
             }
         }
@@ -121,6 +122,10 @@
             if (_Message.Content.ToUpper().Trim() == "`")
             {
                 CustomClientEvent(_Message);
+            }
+            else if (_Message.Content.Contains(Convert.ToChar(30)))
+            {
+                ParseTable(_Message);
             }
             else
             {
@@ -168,5 +173,30 @@
 
         InvokeAsync(StateHasChanged);
         InvokeAsync(ScrollToEnd);
+    }
+
+    private void ParseTable(Message _Message)
+    {
+        String[] Rows = _Message.Content.Split(Convert.ToChar(30));
+        foreach (String Row in Rows)
+        {
+            if (Row != "")
+            {
+                Message _Record = new();
+                _Record.Time = _Message.Time;
+                _Record.User = _Message.User;
+                _Record.Content = "";
+
+                String[] Columns = Row.Split(Convert.ToChar(31));
+                foreach (String Column in Columns)
+                {
+                    if (Column != "")
+                    {
+                        _Record.Content = _Record.Content + " " + Column;
+                    }
+                }
+                AppendMessage(_Record);
+            }
+        }
     }
 }

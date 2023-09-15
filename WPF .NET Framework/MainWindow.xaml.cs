@@ -58,6 +58,10 @@ namespace WPF.NET_Framework
                         {
                             CustomClientEvent(_Message);
                         }
+                        else if (_Message.Content.Contains(Convert.ToChar(30).ToString()))
+                        {
+                            ParseTable(_Message);
+                        }
                         else
                         {
                             AppendMessage(_Message);
@@ -114,8 +118,8 @@ namespace WPF.NET_Framework
 
             if (NameCheck.StartsWith("mi nombre es"))
             {
-                Char[] CH = " ".ToCharArray();
-                String[] NameCheckList = NameCheck.Split(CH);
+                Char[] Space = " ".ToCharArray();
+                String[] NameCheckList = NameCheck.Split(Space);
                 if (NameCheckList.Length == 4)
                 {
                     if (_HubConnection != null)
@@ -151,6 +155,8 @@ namespace WPF.NET_Framework
 
         private void AppendMessage(Message _Message)
         {
+            _Message.Content = _Message.Content.Trim();
+
             BrushConverter BC = new BrushConverter();
             String Color;
 
@@ -198,6 +204,31 @@ namespace WPF.NET_Framework
             }
 
             RichTextBox.ScrollToEnd();
+        }
+
+        private void ParseTable(Message _Message)
+        {
+            String[] Rows = _Message.Content.Split(Convert.ToChar(30));
+            foreach (String Row in Rows)
+            {
+                if (Row != "")
+                {
+                    Message _Record = new Message();
+                    _Record.Time = _Message.Time;
+                    _Record.User = _Message.User;
+                    _Record.Content = "";
+
+                    String[] Columns = Row.Split(Convert.ToChar(31));
+                    foreach (String Column in Columns)
+                    {
+                        if (Column != "")
+                        {
+                            _Record.Content = _Record.Content + " " + Column;
+                        }
+                    }
+                    AppendMessage(_Record);
+                }
+            }
         }
     }
 }
