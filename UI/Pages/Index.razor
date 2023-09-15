@@ -36,7 +36,7 @@
                 FontColor = "Blue";
             }
             <Message>
-                @_Message.Time
+                @_Message.Time.ToString("yyyy-MM-dd_HH:mm:ss.fff")
                 @_Message.User:
                 <font color=@FontColor>@_Message.Content</font>
             </Message>

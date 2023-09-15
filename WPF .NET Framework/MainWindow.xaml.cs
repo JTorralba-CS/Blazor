@@ -164,7 +164,7 @@ namespace WPF.NET_Framework
             }
 
             TextRange TR_User = new TextRange(RichTextBox.Document.ContentEnd, RichTextBox.Document.ContentEnd);
-            TR_User.Text = _Message.Time.ToString() + " " + _Message.User + ": ";
+            TR_User.Text = _Message.Time.ToString("yyyy-MM-dd_HH:mm:ss.fff") + " " + _Message.User + ": ";
             try
             {
                 TR_User.ApplyPropertyValue(TextElement.ForegroundProperty, BC.ConvertFromString("Black"));
