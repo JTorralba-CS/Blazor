@@ -77,33 +77,43 @@
     {
         _Message.Time = DateTime.Now;
 
-        String NameCheck = _Message.Content.Trim().ToLower();
-
-        if (NameCheck.StartsWith("mi nombre es"))
+        if (_Message.Content != null)
         {
-            Char[] Space = " ".ToCharArray();
-            String[] NameCheckList = NameCheck.Split(Space);
-            if (NameCheckList.Length == 4)
+            if (_Message.Content.Trim() == "")
             {
-                if (_HubConnection is not null)
+                return;
+            }
+            else
+            {
+                String NameCheck = _Message.Content.Trim().ToLower();
+
+                if (NameCheck.StartsWith("mi nombre es"))
                 {
-                    _Message.Content = "Call me " + NameCheckList[3].ToUpper() +".";
-                    await _HubConnection.SendAsync("TX", _Message);
-                    _Message.Content = "";
-                }
+                    Char[] Space = " ".ToCharArray();
+                    String[] NameCheckList = NameCheck.Split(Space);
+                    if (NameCheckList.Length == 4)
+                    {
+                        if (_HubConnection is not null)
+                        {
+                            _Message.Content = "Call me " + NameCheckList[3].ToUpper() + ".";
+                            await _HubConnection.SendAsync("TX", _Message);
+                            _Message.Content = "";
+                        }
 
-                _Message.User = NameCheckList[3].ToUpper().Trim();
-                Alias.Add(_Message.User);
+                        _Message.User = NameCheckList[3].ToUpper().Trim();
+                        Alias.Add(_Message.User);
+                    }
+                }
+                else
+                {
+                    if (_HubConnection is not null)
+                    {
+                        await _HubConnection.SendAsync("TX", _Message);
+                        _Message.Content = "";
+                    }
+                }
             }
-        }
-        else
-        {
-            if (_HubConnection is not null)
-            {
-                await _HubConnection.SendAsync("TX", _Message);
-                _Message.Content = "";
-            }
-        }
+        } 
     }
 
     private async Task InitializeSignalR(String ChatHub)

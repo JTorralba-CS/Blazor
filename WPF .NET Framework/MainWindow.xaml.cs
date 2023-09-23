@@ -114,35 +114,45 @@ namespace WPF.NET_Framework
         {
             _Message.Time = DateTime.Now;
 
-            String NameCheck = TextBox_Message.Text.Trim().ToLower();
-
-            if (NameCheck.StartsWith("mi nombre es"))
+            if (TextBox_Message.Text != null)
             {
-                Char[] Space = " ".ToCharArray();
-                String[] NameCheckList = NameCheck.Split(Space);
-                if (NameCheckList.Length == 4)
+                if (TextBox_Message.Text.Trim() == "")
                 {
-                    if (_HubConnection != null)
-                    {
-                        _Message.Content = "Call me " + NameCheckList[3].ToUpper() + ".";
-                        await _HubConnection.SendAsync("TX", _Message);
-                        _Message.Content = "";
-                        TextBox_Message.Text = "";
-                    }
-
-                    _Message.User = NameCheckList[3].ToUpper().Trim();
-                    Button_Connect.Content = _Message.User;
-                    Alias.Add(_Message.User);
+                    return;
                 }
-            }
-            else
-            {
-                if (_HubConnection != null)
+                else
                 {
-                    _Message.Content = TextBox_Message.Text;
-                    await _HubConnection.SendAsync("TX", _Message);
-                    _Message.Content = "";
-                    TextBox_Message.Text = "";
+                    String NameCheck = TextBox_Message.Text.Trim().ToLower();
+
+                    if (NameCheck.StartsWith("mi nombre es"))
+                    {
+                        Char[] Space = " ".ToCharArray();
+                        String[] NameCheckList = NameCheck.Split(Space);
+                        if (NameCheckList.Length == 4)
+                        {
+                            if (_HubConnection != null)
+                            {
+                                _Message.Content = "Call me " + NameCheckList[3].ToUpper() + ".";
+                                await _HubConnection.SendAsync("TX", _Message);
+                                _Message.Content = "";
+                                TextBox_Message.Text = "";
+                            }
+
+                            _Message.User = NameCheckList[3].ToUpper().Trim();
+                            Button_Connect.Content = _Message.User;
+                            Alias.Add(_Message.User);
+                        }
+                    }
+                    else
+                    {
+                        if (_HubConnection != null)
+                        {
+                            _Message.Content = TextBox_Message.Text;
+                            await _HubConnection.SendAsync("TX", _Message);
+                            _Message.Content = "";
+                            TextBox_Message.Text = "";
+                        }
+                    }
                 }
             }
         }
