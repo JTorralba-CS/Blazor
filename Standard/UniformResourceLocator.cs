@@ -1,16 +1,18 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace Standard
 {
-    public class UniformResourceLocator
+    public class UniformResourceLocator : INotifyPropertyChanged
     {
-        public string Domain { get; set; }
+        public String Domain { get; set; }
 
-        public string Page { get; set; }
+        public String Page { get; set; }
 
-        public void SetBase(string URI)
+        public void SetDomain(String URL)
         {
-            string[] Items = URI.Replace("/", "").Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] Items = URL.Replace("/", "").Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
 
             Domain = Items[0] + "://" + Items[1] + "/";
 
@@ -20,16 +22,34 @@ namespace Standard
             }
         }
 
-        public void SetPage(string URI)
+        public void SetPage(String URL)
         {
-            if (URI == "")
+            if (URL == "")
             {
                 Page = "BLAZOR";
             }
             else
             {
-                Page = URI;
+                Page = URL;
             }
+        }
+
+        private String _URL;
+        public String URL
+        {
+            get { return _URL; }
+            set
+            {
+                _URL = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged([CallerMemberName] String PropertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(PropertyName));
         }
     }
 }

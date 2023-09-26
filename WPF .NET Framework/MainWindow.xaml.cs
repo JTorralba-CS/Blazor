@@ -2,10 +2,10 @@
 using Standard;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Media;
 
@@ -16,22 +16,46 @@ namespace WPF.NET_Framework
     /// </summary>
     public partial class MainWindow : Window
     {
+        private UniformResourceLocator _Server = new UniformResourceLocator();
+
+        private UniformResourceLocator _ChatHub = new UniformResourceLocator();
+
         HubConnection _HubConnection;
-        private bool IsConnected => _HubConnection?.State == HubConnectionState.Connected;
+
+        private bool _IsConnected => _HubConnection?.State == HubConnectionState.Connected;
+
+        private bool IsConnected
+        {
+            get { return (bool)GetValue(IsConnectedProperty); }
+            set { SetValue(IsConnectedProperty, value); }
+        }
+
+        public static readonly DependencyProperty IsConnectedProperty =
+            DependencyProperty.Register("IsConnected", typeof(bool), typeof(MainWindow), new PropertyMetadata(false));
 
         private Message _Message = new Message();
+
         private List<String> Alias = new List<String>();
 
         public MainWindow()
         {
             InitializeComponent();
+
+            _Server.SetDomain("https://localhost/");
+            
+            _ChatHub.URL = _Server.Domain + "chathub";
+
             _Message.User = "Connect";
             Alias.Add(_Message.User);
+
+            TextBox_ChatHub.DataContext = _ChatHub;
+            Button_Connect.DataContext = _Message;
+            TextBox_Message.DataContext = _Message;
         }
 
         private void Button_Connect_Click(object sender, RoutedEventArgs e)
         {
-            InitializeSignalR(TextBox_ChatHub.Text);
+            InitializeSignalR(_ChatHub);
         }
 
         private void Button_Send_Click(object sender, RoutedEventArgs e)
@@ -39,10 +63,10 @@ namespace WPF.NET_Framework
             Send();
         }
 
-        private async Task InitializeSignalR(String ChatHub)
+        private async Task InitializeSignalR(UniformResourceLocator _ChatHub)
         {
             _HubConnection = new HubConnectionBuilder()
-                .WithUrl(ChatHub)
+                .WithUrl(_ChatHub.URL)
                 .WithAutomaticReconnect()
                 .Build();
 
@@ -71,9 +95,9 @@ namespace WPF.NET_Framework
 
             await _HubConnection.StartAsync();
 
-            if (IsConnected)
+            if (_IsConnected)
             {
-                RefreshConnected("");
+                await RefreshConnected("");
             }
         }
 
@@ -81,16 +105,9 @@ namespace WPF.NET_Framework
         {
             this.Dispatcher.Invoke(() =>
             {
-                if (IsConnected)
-                {
-                    TextBox_ChatHub.IsEnabled = !IsConnected;
-                    Button_Connect.IsEnabled = !IsConnected;
-                    TextBox_Message.IsEnabled = IsConnected;
-                    Button_Send.IsEnabled = IsConnected;
-                    _Message.User = _HubConnection.ConnectionId.ToString().ToUpper().Substring(0, 5);
-                    Button_Connect.Content = _Message.User;
-                    Alias.Add(_Message.User);
-                }
+                IsConnected = true;
+                _Message.User = _HubConnection.ConnectionId.ToString().ToUpper().Substring(0, 5);
+                Alias.Add(_Message.User);
             });
         }
 
@@ -98,15 +115,8 @@ namespace WPF.NET_Framework
         {
             this.Dispatcher.Invoke(() =>
             {
-                if (!IsConnected)
-                {
-                    TextBox_ChatHub.IsEnabled = !IsConnected;
-                    Button_Connect.IsEnabled = !IsConnected;
-                    TextBox_Message.IsEnabled = IsConnected;
-                    Button_Send.IsEnabled = IsConnected;
-                    _Message.User = "Connect";
-                    Button_Connect.Content = _Message.User;
-                }
+                IsConnected = false;
+                _Message.User = "Connect";
             });
         }
 
@@ -114,15 +124,15 @@ namespace WPF.NET_Framework
         {
             _Message.Time = DateTime.Now;
 
-            if (TextBox_Message.Text != null)
+            if (_Message.Content != null)
             {
-                if (TextBox_Message.Text.Trim() == "")
+                if (_Message.Content.Trim() == "")
                 {
                     return;
                 }
                 else
                 {
-                    String NameCheck = TextBox_Message.Text.Trim().ToLower();
+                    String NameCheck = _Message.Content.Trim().ToLower();
 
                     if (NameCheck.StartsWith("mi nombre es"))
                     {
@@ -135,11 +145,9 @@ namespace WPF.NET_Framework
                                 _Message.Content = "Call me " + NameCheckList[3].ToUpper() + ".";
                                 await _HubConnection.SendAsync("TX", _Message);
                                 _Message.Content = "";
-                                TextBox_Message.Text = "";
                             }
 
                             _Message.User = NameCheckList[3].ToUpper().Trim();
-                            Button_Connect.Content = _Message.User;
                             Alias.Add(_Message.User);
                         }
                     }
@@ -147,10 +155,8 @@ namespace WPF.NET_Framework
                     {
                         if (_HubConnection != null)
                         {
-                            _Message.Content = TextBox_Message.Text;
                             await _HubConnection.SendAsync("TX", _Message);
                             _Message.Content = "";
-                            TextBox_Message.Text = "";
                         }
                     }
                 }
@@ -239,6 +245,19 @@ namespace WPF.NET_Framework
                     AppendMessage(_Record);
                 }
             }
+        }
+    }
+
+    public class BoolInverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return !(bool)value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 }

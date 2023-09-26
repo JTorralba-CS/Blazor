@@ -1,13 +1,38 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace Standard
 {
-    public class Message
+    public class Message : INotifyPropertyChanged
     {
         public DateTime Time { get; set; }
-        public String User { get; set; }
-        public String Content { get; set; }
+
+        private String _User;
+        public String User {
+            get { return _User; }
+            set {
+                _User = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private String _Content;
+        public String Content
+        {
+            get { return _Content; }
+            set
+            {
+                _Content = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged([CallerMemberName] String PropertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(PropertyName));
+        }
     }
 }

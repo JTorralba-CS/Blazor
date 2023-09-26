@@ -3,7 +3,7 @@
 @using Microsoft.JSInterop
 @inject IJSRuntime JS
 
-@inject UniformResourceLocator URL
+@inject UniformResourceLocator _Server
 
 @using Microsoft.AspNetCore.SignalR.Client
 @implements IAsyncDisposable
@@ -20,7 +20,7 @@
 <div class="c-wrapper">
     <header class="c-header">
         <div class="input-group mb-3">
-            <input type="text" class="form-control shadow-none" placeholder="" aria-label="URL" aria-describedby="Connect" @bind="ChatHub" disabled="@(IsConnected!=false)">
+            <input type="text" class="form-control shadow-none" placeholder="" aria-label="URL" aria-describedby="Connect" @bind="_ChatHub.URL" disabled="@(IsConnected!=false)">
             <button class="btn btn-outline-secondary shadow-none" type="button" id="Connect" @onclick="Connect" disabled="@(IsConnected!=false)">@_Message.User</button>
         </div>
     </header>
@@ -52,25 +52,29 @@
 </div>
 
 @code {
-    private String? ChatHub;
+    private UniformResourceLocator _ChatHub = new();
+
     private HubConnection? _HubConnection;
     private bool IsConnected => _HubConnection?.State == HubConnectionState.Connected;
 
     private Message _Message = new();
     private List<Message> _Messages = new();
-    private String FontColor;
+    
     private List<String> Alias = new();
+
+    private String FontColor;
 
     protected override void OnParametersSet()
     {
-        ChatHub = URL.Domain + "chathub";
+        _ChatHub.URL = _Server.Domain + "chathub";
+
         _Message.User = "Connect";
         Alias.Add(_Message.User);
     }
 
     private async Task Connect()
     {
-        await InitializeSignalR(ChatHub);
+        await InitializeSignalR(_ChatHub);
     }
 
     private async Task Send()
@@ -116,10 +120,10 @@
         } 
     }
 
-    private async Task InitializeSignalR(String ChatHub)
+    private async Task InitializeSignalR(UniformResourceLocator _ChatHub)
     {
         _HubConnection = new HubConnectionBuilder()
-            .WithUrl(ChatHub)
+            .WithUrl(_ChatHub.URL)
             .WithAutomaticReconnect()
             .Build();
 

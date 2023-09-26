@@ -1,6 +1,6 @@
 ﻿@inherits LayoutComponentBase
 
-@inject UniformResourceLocator URL
+@inject UniformResourceLocator _Server
 @inject NavigationManager MyNavigationManager
 
 <main>
@@ -10,11 +10,11 @@
 @code {
     protected override async Task OnInitializedAsync()
     {
-        URL.SetBase(MyNavigationManager.BaseUri.ToLower());
+        _Server.SetDomain(MyNavigationManager.BaseUri.ToLower());
     }
 
     protected override void OnParametersSet()
     {
-        URL.SetPage(MyNavigationManager.ToBaseRelativePath(MyNavigationManager.Uri.ToLower()));
+        _Server.SetPage(MyNavigationManager.ToBaseRelativePath(MyNavigationManager.Uri.ToLower()));
     }
 }
