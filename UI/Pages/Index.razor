@@ -1,52 +1,53 @@
-﻿@page "/"
+﻿@using Microsoft.JSInterop
+@using Microsoft.AspNetCore.SignalR.Client
 
-@using Microsoft.JSInterop
-@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+@inject IJSRuntime _JavaScript
 
 @inject UniformResourceLocator _Server
 
-@using Microsoft.AspNetCore.SignalR.Client
-@implements IAsyncDisposable
+@functions {
+    ElementReference RichTextBox;
 
-@functions{
-    ElementReference TextAreaX;
-    int LineNumber = 0;
-
-    void ScrollToEnd() {
-        JS.InvokeVoidAsync("scrollToEnd", new object[] {TextAreaX});
+    void ScrollToEnd()
+    {
+        _JavaScript.InvokeVoidAsync("ScrollToEnd", new object[] {RichTextBox});
     }
 }
+
+@page "/"
 
 <div class="c-wrapper">
     <header class="c-header">
         <div class="input-group mb-3">
-            <input type="text" class="form-control shadow-none" placeholder="" aria-label="URL" aria-describedby="Connect" @bind="_ChatHub.URL" disabled="@(IsConnected!=false)">
-            <button class="btn btn-outline-secondary shadow-none" type="button" id="Connect" @onclick="Connect" disabled="@(IsConnected!=false)">@_Message.User</button>
+            <input type="text" class="form-control shadow-none" placeholder="" aria-label="URL" aria-describedby="Connect" @bind="_ChatHub.URL" disabled="@(_IsConnected!=false)">
+            <button class="btn btn-outline-secondary shadow-none" type="button" id="Connect" @onclick="Connect" disabled="@(_IsConnected!=false)">@_Message.User</button>
         </div>
     </header>
-    <div class="c-body" @ref=TextAreaX>
+    <div class="c-body" @ref=RichTextBox>
         @foreach (Message _Message in _Messages)
         {
-            if (_Message.User == this._Message.User || Alias.Contains(_Message.User))
+            if (_Message.User == this._Message.User || _Alias.Contains(_Message.User))
             {
-                FontColor = "Green";
+                _FontColor = "Green";
             }
             else
             {
-                FontColor = "Blue";
+                _FontColor = "Blue";
             }
             <Message>
                 @_Message.Time.ToString("yyyy-MM-dd_HH:mm:ss.fff")
                 @_Message.User:
-                <font color=@FontColor>@_Message.Content</font>
+                <font color=@_FontColor>@_Message.Content</font>
             </Message>
             <br />
         }
     </div>
     <footer class="c-footer">
         <div class="input-group mb-3">
-            <input type="text" class="form-control shadow-none" placeholder="" aria-label="Message" aria-describedby="Send" @bind="_Message.Content" disabled="@(IsConnected==false)">
-            <button class="btn btn-outline-secondary shadow-none" type="button" id="Send" @onclick="Send" disabled="@(IsConnected==false)">Send</button>
+            <input type="text" class="form-control shadow-none" placeholder="" aria-label="Message" aria-describedby="Send" @bind="_Message.Content" disabled="@(_IsConnected==false)">
+            <button class="btn btn-outline-secondary shadow-none" type="button" id="Send" @onclick="Send" disabled="@(_IsConnected==false)">Send</button>
         </div>
     </footer>
 </div>
@@ -55,21 +56,21 @@
     private UniformResourceLocator _ChatHub = new();
 
     private HubConnection? _HubConnection;
-    private bool IsConnected => _HubConnection?.State == HubConnectionState.Connected;
+    private bool _IsConnected => _HubConnection?.State == HubConnectionState.Connected;
 
     private Message _Message = new();
     private List<Message> _Messages = new();
     
-    private List<String> Alias = new();
+    private List<String> _Alias = new();
 
-    private String FontColor;
+    private String _FontColor;
 
     protected override void OnParametersSet()
     {
         _ChatHub.URL = _Server.Domain + "chathub";
 
         _Message.User = "Connect";
-        Alias.Add(_Message.User);
+        _Alias.Add(_Message.User);
     }
 
     private async Task Connect()
@@ -89,23 +90,23 @@
             }
             else
             {
-                String NameCheck = _Message.Content.Trim().ToLower();
+                String _NameCheck = _Message.Content.Trim().ToLower();
 
-                if (NameCheck.StartsWith("mi nombre es"))
+                if (_NameCheck.StartsWith("mi nombre es"))
                 {
-                    Char[] Space = " ".ToCharArray();
-                    String[] NameCheckList = NameCheck.Split(Space);
-                    if (NameCheckList.Length == 4)
+                    Char[] _Space = " ".ToCharArray();
+                    String[] _NameCheckList = _NameCheck.Split(_Space);
+                    if (_NameCheckList.Length == 4)
                     {
                         if (_HubConnection is not null)
                         {
-                            _Message.Content = "Call me " + NameCheckList[3].ToUpper() + ".";
+                            _Message.Content = "Call me " + _NameCheckList[3].ToUpper() + ".";
                             await _HubConnection.SendAsync("TX", _Message);
                             _Message.Content = "";
                         }
 
-                        _Message.User = NameCheckList[3].ToUpper().Trim();
-                        Alias.Add(_Message.User);
+                        _Message.User = _NameCheckList[3].ToUpper().Trim();
+                        _Alias.Add(_Message.User);
                     }
                 }
                 else
@@ -148,20 +149,20 @@
         });
         await _HubConnection.StartAsync();
 
-        if (IsConnected)
+        if (_IsConnected)
         {
             await RefreshConnected("");
         }
     }
 
-    private async Task RefreshConnected(String S)
+    private async Task RefreshConnected(String _S)
     {
         _Message.User = _HubConnection.ConnectionId.ToString().ToUpper().Substring(0, 5);
-        Alias.Add(_Message.User);
+        _Alias.Add(_Message.User);
         InvokeAsync(StateHasChanged);
     }
 
-    private async Task RefreshDisconnected(Exception E)
+    private async Task RefreshDisconnected(Exception _E)
     {
         _Message.User = "Connect";
         InvokeAsync(StateHasChanged);
@@ -191,22 +192,22 @@
 
     private void ParseTable(Message _Message)
     {
-        String[] Rows = _Message.Content.Split(Convert.ToChar(30));
-        foreach (String Row in Rows)
+        String[] _Rows = _Message.Content.Split(Convert.ToChar(30));
+        foreach (String _Row in _Rows)
         {
-            if (Row != "")
+            if (_Row != "")
             {
                 Message _Record = new();
                 _Record.Time = _Message.Time;
                 _Record.User = _Message.User;
                 _Record.Content = "";
 
-                String[] Columns = Row.Split(Convert.ToChar(31));
-                foreach (String Column in Columns)
+                String[] _Columns = _Row.Split(Convert.ToChar(31));
+                foreach (String _Column in _Columns)
                 {
-                    if (Column != "")
+                    if (_Column != "")
                     {
-                        _Record.Content = _Record.Content + " " + Column;
+                        _Record.Content = _Record.Content + " " + _Column;
                     }
                 }
                 AppendMessage(_Record);

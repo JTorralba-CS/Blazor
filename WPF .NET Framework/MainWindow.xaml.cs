@@ -11,31 +11,28 @@ using System.Windows.Media;
 
 namespace WPF.NET_Framework
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         private UniformResourceLocator _Server = new UniformResourceLocator();
 
         private UniformResourceLocator _ChatHub = new UniformResourceLocator();
 
-        HubConnection _HubConnection;
+        private HubConnection _HubConnection;
+        private bool IsConnected => _HubConnection?.State == HubConnectionState.Connected;
 
-        private bool _IsConnected => _HubConnection?.State == HubConnectionState.Connected;
-
-        private bool IsConnected
+        private bool _IsConnected
         {
-            get { return (bool)GetValue(IsConnectedProperty); }
-            set { SetValue(IsConnectedProperty, value); }
+            get { return (bool)GetValue(_IsConnectedProperty); }
+            set { SetValue(_IsConnectedProperty, value); }
         }
 
-        public static readonly DependencyProperty IsConnectedProperty =
-            DependencyProperty.Register("IsConnected", typeof(bool), typeof(MainWindow), new PropertyMetadata(false));
+        public static readonly DependencyProperty _IsConnectedProperty = DependencyProperty.Register("_IsConnected", typeof(bool), typeof(MainWindow), new PropertyMetadata(false));
 
         private Message _Message = new Message();
 
-        private List<String> Alias = new List<String>();
+        private List<String> _Alias = new List<String>();
+
+        private String _FontColor;
 
         public MainWindow()
         {
@@ -46,19 +43,19 @@ namespace WPF.NET_Framework
             _ChatHub.URL = _Server.Domain + "chathub";
 
             _Message.User = "Connect";
-            Alias.Add(_Message.User);
+            _Alias.Add(_Message.User);
 
             TextBox_ChatHub.DataContext = _ChatHub;
             Button_Connect.DataContext = _Message;
             TextBox_Message.DataContext = _Message;
         }
 
-        private void Button_Connect_Click(object sender, RoutedEventArgs e)
+        private void Button_Connect_Click(object _Sender, RoutedEventArgs _E)
         {
             InitializeSignalR(_ChatHub);
         }
 
-        private void Button_Send_Click(object sender, RoutedEventArgs e)
+        private void Button_Send_Click(object _Sender, RoutedEventArgs _E)
         {
             Send();
         }
@@ -95,27 +92,27 @@ namespace WPF.NET_Framework
 
             await _HubConnection.StartAsync();
 
-            if (_IsConnected)
+            if (IsConnected)
             {
                 await RefreshConnected("");
             }
         }
 
-        private async Task RefreshConnected(String S)
+        private async Task RefreshConnected(String _S)
         {
             this.Dispatcher.Invoke(() =>
             {
-                IsConnected = true;
+                _IsConnected = true;
                 _Message.User = _HubConnection.ConnectionId.ToString().ToUpper().Substring(0, 5);
-                Alias.Add(_Message.User);
+                _Alias.Add(_Message.User);
             });
         }
 
-        private async Task RefreshDisconnected(Exception E)
+        private async Task RefreshDisconnected(Exception _E)
         {
             this.Dispatcher.Invoke(() =>
             {
-                IsConnected = false;
+                _IsConnected = false;
                 _Message.User = "Connect";
             });
         }
@@ -132,23 +129,23 @@ namespace WPF.NET_Framework
                 }
                 else
                 {
-                    String NameCheck = _Message.Content.Trim().ToLower();
+                    String _NameCheck = _Message.Content.Trim().ToLower();
 
-                    if (NameCheck.StartsWith("mi nombre es"))
+                    if (_NameCheck.StartsWith("mi nombre es"))
                     {
-                        Char[] Space = " ".ToCharArray();
-                        String[] NameCheckList = NameCheck.Split(Space);
-                        if (NameCheckList.Length == 4)
+                        Char[] _Space = " ".ToCharArray();
+                        String[] _NameCheckList = _NameCheck.Split(_Space);
+                        if (_NameCheckList.Length == 4)
                         {
                             if (_HubConnection != null)
                             {
-                                _Message.Content = "Call me " + NameCheckList[3].ToUpper() + ".";
+                                _Message.Content = "Call me " + _NameCheckList[3].ToUpper() + ".";
                                 await _HubConnection.SendAsync("TX", _Message);
                                 _Message.Content = "";
                             }
 
-                            _Message.User = NameCheckList[3].ToUpper().Trim();
-                            Alias.Add(_Message.User);
+                            _Message.User = _NameCheckList[3].ToUpper().Trim();
+                            _Alias.Add(_Message.User);
                         }
                     }
                     else
@@ -173,47 +170,46 @@ namespace WPF.NET_Framework
         {
             _Message.Content = _Message.Content.Trim();
 
-            BrushConverter BC = new BrushConverter();
-            String Color;
+            BrushConverter _BrushConverter = new BrushConverter();
 
-            if (_Message.User == this._Message.User || Alias.Contains(_Message.User))
+            if (_Message.User == this._Message.User || _Alias.Contains(_Message.User))
             {
-                Color = "Green";
+                _FontColor = "Green";
             }
             else if (_Message.Content == "\u2764")
             {
-                Color = "Red";
+                _FontColor = "Red";
             }
             else
             {
-                Color = "Blue";
+                _FontColor = "Blue";
             }
 
-            TextRange TR_User = new TextRange(RichTextBox.Document.ContentEnd, RichTextBox.Document.ContentEnd);
-            TR_User.Text = _Message.Time.ToString("yyyy-MM-dd_HH:mm:ss.fff") + " " + _Message.User + ": ";
+            TextRange _TextRange_User = new TextRange(RichTextBox.Document.ContentEnd, RichTextBox.Document.ContentEnd);
+            _TextRange_User.Text = _Message.Time.ToString("yyyy-MM-dd_HH:mm:ss.fff") + " " + _Message.User + ": ";
             try
             {
-                TR_User.ApplyPropertyValue(TextElement.ForegroundProperty, BC.ConvertFromString("Black"));
+                _TextRange_User.ApplyPropertyValue(TextElement.ForegroundProperty, _BrushConverter.ConvertFromString("Black"));
             }
             catch (FormatException)
             {
             }
 
-            TextRange TR_Message = new TextRange(RichTextBox.Document.ContentEnd, RichTextBox.Document.ContentEnd);
-            TR_Message.Text = _Message.Content;
+            TextRange _TextRange_Message = new TextRange(RichTextBox.Document.ContentEnd, RichTextBox.Document.ContentEnd);
+            _TextRange_Message.Text = _Message.Content;
             try
             {
-                TR_Message.ApplyPropertyValue(TextElement.ForegroundProperty, BC.ConvertFromString(Color));
+                _TextRange_Message.ApplyPropertyValue(TextElement.ForegroundProperty, _BrushConverter.ConvertFromString(_FontColor));
             }
             catch (FormatException)
             {
             }
 
-            TextRange TR_CR = new TextRange(RichTextBox.Document.ContentEnd, RichTextBox.Document.ContentEnd);
-            TR_CR.Text = "\r";
+            TextRange _TextRange_CR = new TextRange(RichTextBox.Document.ContentEnd, RichTextBox.Document.ContentEnd);
+            _TextRange_CR.Text = "\r";
             try
             {
-                TR_CR.ApplyPropertyValue(TextElement.ForegroundProperty, BC.ConvertFromString("Black"));
+                _TextRange_CR.ApplyPropertyValue(TextElement.ForegroundProperty, _BrushConverter.ConvertFromString("Black"));
             }
             catch (FormatException)
             {
@@ -224,22 +220,22 @@ namespace WPF.NET_Framework
 
         private void ParseTable(Message _Message)
         {
-            String[] Rows = _Message.Content.Split(Convert.ToChar(30));
-            foreach (String Row in Rows)
+            String[] _Rows = _Message.Content.Split(Convert.ToChar(30));
+            foreach (String _Row in _Rows)
             {
-                if (Row != "")
+                if (_Row != "")
                 {
                     Message _Record = new Message();
                     _Record.Time = _Message.Time;
                     _Record.User = _Message.User;
                     _Record.Content = "";
 
-                    String[] Columns = Row.Split(Convert.ToChar(31));
-                    foreach (String Column in Columns)
+                    String[] _Columns = _Row.Split(Convert.ToChar(31));
+                    foreach (String _Column in _Columns)
                     {
-                        if (Column != "")
+                        if (_Column != "")
                         {
-                            _Record.Content = _Record.Content + " " + Column;
+                            _Record.Content = _Record.Content + " " + _Column;
                         }
                     }
                     AppendMessage(_Record);
@@ -250,12 +246,12 @@ namespace WPF.NET_Framework
 
     public class BoolInverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object Value, Type TargetType, object Parameter, System.Globalization.CultureInfo Culture)
         {
-            return !(bool)value;
+            return !(bool)Value;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object ConvertBack(object Value, Type TargetType, object Parameter, System.Globalization.CultureInfo Culture)
         {
             throw new NotImplementedException();
         }

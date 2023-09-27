@@ -1,3 +1,3 @@
-﻿function scrollToEnd(TextArea) {
-    TextArea.scrollTop = TextArea.scrollHeight;
+﻿function ScrollToEnd(RichTextBox) {
+    RichTextBox.scrollTop = RichTextBox.scrollHeight;
 }
