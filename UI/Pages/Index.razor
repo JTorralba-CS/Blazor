@@ -60,7 +60,7 @@
 
     private Message _Message = new();
     private List<Message> _Messages = new();
-    
+
     private List<String> _Alias = new();
 
     private String _FontColor;
@@ -70,7 +70,7 @@
         _ChatHub.URL = _Server.Domain + "chathub";
 
         _Message.User = "Connect";
-        _Alias.Add(_Message.User);
+        //_Alias.Add(_Message.User);
     }
 
     private async Task Connect()
@@ -157,8 +157,18 @@
 
     private async Task RefreshConnected(String _S)
     {
-        _Message.User = _HubConnection.ConnectionId.ToString().ToUpper().Substring(0, 5);
-        _Alias.Add(_Message.User);
+        if (_Alias.Count() == 0)
+        {
+            _Message.User = _HubConnection.ConnectionId.ToString().ToUpper().Substring(0, 5);
+            _Alias.Add(_Message.User);
+        }
+        else
+        {
+            _Message.User = _Alias[_Alias.Count() - 1];
+            _Message.Content = "Connection ID " + _HubConnection.ConnectionId.ToString().ToUpper().Substring(0, 5) + " is me reconnected.";
+            Send();
+        }
+
         InvokeAsync(StateHasChanged);
     }
 

@@ -11,7 +11,7 @@ public class ChatHub : Hub
 
         _Message.Time = DateTime.Now;
         _Message.User = "SIGNALR";
-        _Message.Content = Context.ConnectionId.ToString().ToUpper().Substring(0, 5) + " connected.";
+        _Message.Content = "Connection ID " + Context.ConnectionId.ToString().ToUpper().Substring(0, 5) + " initialized.";
 
         Clients.All.SendAsync("RX", _Message);
 
@@ -24,7 +24,7 @@ public class ChatHub : Hub
 
         _Message.Time = DateTime.Now;
         _Message.User = "SIGNALR";
-        _Message.Content = Context.ConnectionId.ToString().ToUpper().Substring(0, 5) + " disconnected.";
+        _Message.Content = "Connection ID " + Context.ConnectionId.ToString().ToUpper().Substring(0, 5) + " terminated.";
 
         Clients.All.SendAsync("RX", _Message);
 

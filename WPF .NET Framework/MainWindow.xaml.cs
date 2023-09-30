@@ -2,6 +2,7 @@
 using Standard;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -43,7 +44,7 @@ namespace WPF.NET_Framework
             _ChatHub.URL = _Server.Domain + "chathub";
 
             _Message.User = "Connect";
-            _Alias.Add(_Message.User);
+            //_Alias.Add(_Message.User);
 
             TextBox_ChatHub.DataContext = _ChatHub;
             Button_Connect.DataContext = _Message;
@@ -103,8 +104,18 @@ namespace WPF.NET_Framework
             this.Dispatcher.Invoke(() =>
             {
                 _IsConnected = true;
-                _Message.User = _HubConnection.ConnectionId.ToString().ToUpper().Substring(0, 5);
-                _Alias.Add(_Message.User);
+
+                if (_Alias.Count() == 0)
+                {
+                    _Message.User = _HubConnection.ConnectionId.ToString().ToUpper().Substring(0, 5);
+                    _Alias.Add(_Message.User);
+                }
+                else
+                {
+                    _Message.User = _Alias[_Alias.Count() - 1];
+                    _Message.Content = "Connection ID " + _HubConnection.ConnectionId.ToString().ToUpper().Substring(0, 5) + " is me reconnected.";
+                    Send();
+                }
             });
         }
 
