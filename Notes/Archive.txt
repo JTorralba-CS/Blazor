@@ -4,6 +4,8 @@ Windows OS ----------
 
 - move project folders into archive subfolder
 
+- move "packages" folder into archive subfolder
+
 - modify project(s) path in .sln file to path of archive subfolder
 
 
@@ -11,7 +13,7 @@ Visual Studio ----------
 
 - open .sln file
 
-- create new solution subfolder
+- create new date based solution subfolder under "Archive"
 
 - move project(s) into solution subfolder
 
@@ -24,11 +26,11 @@ Visual Studio ----------
 
 Visual Studio ----------
 
+- unload previous archive(s)/project(s)
+
 - set StartUp projects
 
 - execute solution / test project(s)
-
-- unload project(s)
 
 - clean solution
 
